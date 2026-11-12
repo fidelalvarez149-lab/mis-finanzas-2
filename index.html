@@ -141,6 +141,7 @@
       display: block;
     }
 
+    /* INPUTS */
     .large-input {
       width: 100%;
       background-color: var(--input-bg);
@@ -515,7 +516,7 @@
       box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
     }
 
-    /* NOTIFICACIÓN TOAST */
+    /* TOAST */
     .toast-container {
       position: fixed;
       top: 18px;
@@ -654,7 +655,7 @@
 
         <div>
           <label class="field-label">FECHA</label>
-          <input type="date" id="inputDate" class="date-input" onchange="updateMonthSummary()">
+          <input type="date" id="inputDate" class="date-input" onchange="loadDateData()">
         </div>
 
         <button class="btn-save" onclick="saveDay()">Guardar el día</button>
@@ -788,7 +789,6 @@
   </div>
 
   <script>
-    // DETECTOR DE ACTUALIZACIONES AUTOMÁTICAS
     let newWorkerWaiting = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -890,11 +890,34 @@
       calculateDaily();
     }
 
+    // CARGA AUTOMÁTICA DE DATOS DEL DÍA (EVITA QUE SE BORREN TUS GANANCIAS)
+    function loadDateData() {
+      const dateVal = document.getElementById('inputDate').value;
+      const existing = records.find(r => r.date === dateVal);
+
+      if (existing) {
+        document.getElementById('inputIncome').value = existing.gane || 0;
+        document.getElementById('inputExpense').value = existing.gastos || 0;
+        if (existing.percent !== undefined) {
+          setPercent(existing.percent);
+        }
+      } else {
+        document.getElementById('inputIncome').value = 0;
+        document.getElementById('inputExpense').value = 0;
+      }
+      calculateDaily();
+      updateMonthSummary();
+    }
+
+    // CÁLCULO EN VIVO: EL APARTADO NO SE TOCA, SOLO DISMINUYE 'ME QUEDA'
     function calculateDaily() {
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
       const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
 
+      // El apartado depende 100% solo de lo que se ganó
       const aparto = Math.round(gane * (currentPercent / 100));
+
+      // El gasto se descuenta ÚNICAMENTE de lo que queda disponible
       const disponible = gane - aparto;
       const queda = disponible - gasto;
 
@@ -907,21 +930,35 @@
       quedaEl.style.color = queda < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
     }
 
+    // GUARDAR DÍA: BLINDAJE CONTRA SOBREESCRITURAS DE GANANCIA Y APARTADO
     function saveDay() {
       const dateVal = document.getElementById('inputDate').value;
-      const incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
+      let incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
       const expenseVal = parseFloat(document.getElementById('inputExpense').value) || 0;
 
       if (!dateVal) {
         showToast('Selecciona una fecha', true);
         return;
       }
+
+      const existing = records.find(r => r.date === dateVal);
+
+      // Si el usuario solo vino a ingresar un gasto y dejó el ingreso en 0,
+      // pero ya tenía una ganancia guardada ese día, conservar la ganancia intacta:
+      if (incomeVal === 0 && existing && existing.gane > 0) {
+        incomeVal = existing.gane;
+        document.getElementById('inputIncome').value = incomeVal;
+      }
+
       if (incomeVal <= 0 && expenseVal <= 0) {
         showToast('Ingresa ganancia o gastos', true);
         return;
       }
 
+      // El apartado se calcula únicamente sobre la ganancia
       const aparto = Math.round(incomeVal * (currentPercent / 100));
+
+      // El gasto se descuenta únicamente de lo que queda
       const queda = (incomeVal - aparto) - expenseVal;
 
       records = records.filter(r => r.date !== dateVal);
@@ -937,14 +974,13 @@
       records.sort((a, b) => new Date(b.date) - new Date(a.date));
       localStorage.setItem('fidel_records', JSON.stringify(records));
 
-      document.getElementById('inputIncome').value = 0;
-      document.getElementById('inputExpense').value = 0;
       calculateDaily();
       updateMonthSummary();
       renderHistory();
       showToast('¡Día guardado con éxito!');
     }
 
+    // RESUMEN DEL MES: EL APARTADO Y EL FONDO HISTÓRICO SON TOTALMENTE INTOCABLES
     function updateMonthSummary() {
       const selectedDate = new Date((document.getElementById('inputDate').value || formattedTodayDate) + 'T00:00:00');
       const year = selectedDate.getFullYear();
@@ -959,12 +995,18 @@
       });
 
       const ganadoMes = monthRecords.reduce((acc, r) => acc + (r.gane || 0), 0);
+      
+      // EL APARTADO NUNCA RESTA GASTOS: es la suma íntegra de los ahorros
       const apartadoMes = monthRecords.reduce((acc, r) => acc + (r.aparto || 0), 0);
       const gastosMes = monthRecords.reduce((acc, r) => acc + (r.gastos || 0), 0);
+
+      // Los gastos ÚNICAMENTE se restan del campo TE QUEDÓ
       const quedoMes = (ganadoMes - apartadoMes) - gastosMes;
 
       const diasTrabajados = monthRecords.filter(r => (r.gane || 0) > 0).length;
       const promedio = diasTrabajados > 0 ? Math.round(ganadoMes / diasTrabajados) : 0;
+      
+      // Fondo total intocable
       const fondoHistorico = records.reduce((acc, r) => acc + (r.aparto || 0), 0);
 
       document.getElementById('sumGanado').innerText = `C$ ${ganadoMes.toLocaleString()}`;
@@ -989,7 +1031,7 @@
 
       container.innerHTML = records.map((r, index) => `
         <div class="history-item">
-          <div>
+          <div onclick="selectHistoryDate('${r.date}')" style="cursor:pointer; flex:1;">
             <strong style="color:#ffffff;">${r.date}</strong><br>
             <span style="font-size:0.83rem; color:var(--text-muted);">
               Ganó: C$ ${(r.gane || 0).toLocaleString()} | Fondo (${r.percent}%): <span style="color:var(--accent-gold);">C$ ${(r.aparto || 0).toLocaleString()}</span><br>
@@ -1001,6 +1043,13 @@
       `).join('');
     }
 
+    function selectHistoryDate(dateStr) {
+      document.getElementById('inputDate').value = dateStr;
+      switchTab('hoy');
+      loadDateData();
+      showToast(`Cargado día ${dateStr}`);
+    }
+
     function askDeleteRecord(index) {
       openConfirmModal(
         '¿Eliminar Registro?',
@@ -1008,7 +1057,7 @@
         () => {
           records.splice(index, 1);
           localStorage.setItem('fidel_records', JSON.stringify(records));
-          updateMonthSummary();
+          loadDateData();
           renderHistory();
           showToast('Registro eliminado');
         }
@@ -1191,8 +1240,7 @@
     }
 
     setupHeaderDate();
-    calculateDaily();
-    updateMonthSummary();
+    loadDateData();
   </script>
 </body>
 </html>
