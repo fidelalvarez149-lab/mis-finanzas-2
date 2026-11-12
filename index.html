@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0b1511">
+  <meta name="theme-color" content="#070d0a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,18 +14,19 @@
 
   <style>
     :root {
-      --bg-color: #0b1511;
-      --card-bg: #14201a;
-      --card-border: #1e3027;
-      --input-bg: #121c17;
+      --bg-color: #070d0a;
+      --card-bg: #101914;
+      --card-border: rgba(62, 200, 138, 0.12);
+      --card-hover: #15221b;
+      --input-bg: #0c1410;
       --accent-green: #3ec88a;
-      --accent-green-hover: #36b57c;
-      --accent-dark: #082116;
-      --accent-orange: #e5a13c;
-      --accent-red: #ef5350;
-      --text-main: #f3f4f6;
-      --text-muted: #83978c;
+      --accent-green-glow: rgba(62, 200, 138, 0.25);
+      --accent-dark: #051a10;
+      --accent-gold: #f59e0b;
+      --accent-red: #f87171;
       --danger: #ef4444;
+      --text-main: #f9fafb;
+      --text-muted: #82958b;
     }
 
     * {
@@ -39,7 +40,7 @@
     body {
       background-color: var(--bg-color);
       color: var(--text-main);
-      padding: 16px;
+      padding: 16px 14px 40px;
       display: flex;
       justify-content: center;
       min-height: 100vh;
@@ -53,91 +54,123 @@
       gap: 16px;
     }
 
-    .header { padding: 8px 4px; }
-    .header h1 {
-      font-size: 1.45rem;
-      font-weight: 700;
-      line-height: 1.25;
-      color: #ffffff;
-    }
-    .header .date-display {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-      text-transform: capitalize;
-    }
-    .header .change-name {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      text-decoration: underline;
-      cursor: pointer;
-      display: inline-block;
-      margin-top: 4px;
+    /* ENCABEZADO ELEGANTE */
+    .header {
+      padding: 8px 4px 4px;
     }
 
+    .header h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      background: linear-gradient(180deg, #ffffff 40%, #cbe4d7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header .date-display {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 5px;
+      text-transform: capitalize;
+      font-weight: 500;
+    }
+
+    .header .change-name {
+      font-size: 0.82rem;
+      color: var(--accent-green);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      background: rgba(62, 200, 138, 0.08);
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(62, 200, 138, 0.2);
+    }
+
+    /* PESTAÑAS TIPO PILL */
     .nav-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      background-color: rgba(20, 32, 26, 0.6);
-      padding: 4px;
-      border-radius: 12px;
+      gap: 6px;
+      background: rgba(16, 25, 20, 0.9);
+      padding: 5px;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
     }
 
     .tab-btn {
       background: transparent;
-      border: 1px solid transparent;
+      border: none;
       color: var(--text-muted);
-      padding: 10px 0;
-      border-radius: 9px;
+      padding: 11px 0;
+      border-radius: 10px;
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
     }
 
     .tab-btn.active {
-      background-color: #21342b;
+      background: #1b2b22;
       color: #ffffff;
-      border-color: #2f473c;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(62, 200, 138, 0.3);
     }
 
+    /* TARJETAS PREMIUM */
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 18px;
+      border-radius: 20px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     }
 
     .field-label {
-      font-size: 0.76rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
       color: var(--text-muted);
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
       display: block;
     }
 
+    /* INPUTS */
     .large-input {
       width: 100%;
       background-color: var(--input-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-size: 1.55rem;
-      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 1.6rem;
+      font-weight: 800;
       color: #ffffff;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .large-input:focus { border-color: var(--accent-green); }
-    .input-expense { color: var(--accent-red); }
-    .input-expense:focus { border-color: var(--accent-red); }
+    .large-input:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px var(--accent-green-glow);
+    }
 
+    .input-expense { color: var(--accent-red); }
+    .input-expense:focus {
+      border-color: var(--accent-red);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+
+    /* BOTONES DE PORCENTAJE */
     .percent-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -146,109 +179,123 @@
 
     .percent-btn {
       background-color: var(--input-bg);
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       color: #ffffff;
       font-size: 1.05rem;
-      font-weight: 700;
-      padding: 10px;
+      font-weight: 800;
+      padding: 12px;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .percent-btn.active {
-      background-color: var(--accent-green);
-      color: var(--accent-dark);
-      border-color: var(--accent-green);
+      background: linear-gradient(135deg, #3ec88a 0%, #29a068 100%);
+      color: #041a0f;
+      border-color: #3ec88a;
+      box-shadow: 0 4px 15px var(--accent-green-glow);
     }
 
+    /* CONTADORES EN VIVO 2x2 */
     .mini-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 10px;
     }
 
     .mini-box {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
-      padding: 9px 12px;
-      border-radius: 12px;
+      padding: 11px 14px;
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
       gap: 3px;
     }
 
     .mini-box .label {
-      font-size: 0.68rem;
-      font-weight: 700;
+      font-size: 0.67rem;
+      font-weight: 800;
       color: var(--text-muted);
+      letter-spacing: 0.05em;
     }
 
     .mini-box .value {
-      font-size: 1.05rem;
-      font-weight: 700;
+      font-size: 1.12rem;
+      font-weight: 800;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .val-gane { color: #ffffff; }
-    .val-aparto { color: var(--accent-orange); }
+    .val-aparto { color: var(--accent-gold); }
     .val-gasto { color: var(--accent-red); }
     .val-queda { color: var(--accent-green); }
 
     .date-input {
       width: 100%;
       background-color: var(--input-bg);
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       color: #ffffff;
-      border-radius: 10px;
-      padding: 11px 14px;
+      border-radius: 12px;
+      padding: 12px 14px;
       font-size: 0.95rem;
       font-weight: 600;
       outline: none;
       color-scheme: dark;
     }
 
+    /* BOTONES PRINCIPALES */
     .btn-save {
-      background-color: var(--accent-green);
-      color: var(--accent-dark);
+      background: linear-gradient(135deg, #4ade80 0%, #34b373 100%);
+      color: #051c11;
       border: none;
       width: 100%;
-      padding: 14px;
+      padding: 15px;
       font-size: 1.05rem;
-      font-weight: 700;
-      border-radius: 12px;
+      font-weight: 800;
+      border-radius: 14px;
       cursor: pointer;
+      box-shadow: 0 6px 20px rgba(52, 179, 115, 0.35);
+      transition: transform 0.15s ease, filter 0.2s ease;
     }
 
-    .btn-save:active { background-color: var(--accent-green-hover); }
+    .btn-save:active {
+      transform: scale(0.98);
+      filter: brightness(0.95);
+    }
 
+    /* RESUMEN DEL MES */
     .month-header {
-      font-size: 1.05rem;
-      font-weight: 700;
+      font-size: 1.1rem;
+      font-weight: 800;
       color: #ffffff;
+      text-transform: capitalize;
     }
 
     .banner-ganado {
-      background-color: var(--accent-green);
-      color: var(--accent-dark);
-      padding: 16px;
-      border-radius: 14px;
+      background: linear-gradient(135deg, #3ec88a 0%, #2ea06c 100%);
+      color: #041c10;
+      padding: 18px 20px;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
+      box-shadow: 0 8px 24px rgba(62, 200, 138, 0.3);
     }
 
     .banner-ganado .label {
-      font-size: 0.72rem;
-      font-weight: 800;
+      font-size: 0.74rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
       opacity: 0.85;
     }
 
     .banner-ganado .amount {
-      font-size: 2.1rem;
-      font-weight: 800;
+      font-size: 2.25rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
     }
 
     .grid-stats {
@@ -260,8 +307,8 @@
     .stat-card {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
-      padding: 10px 12px;
-      border-radius: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -269,79 +316,260 @@
 
     .stat-card .label {
       font-size: 0.67rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-muted);
+      letter-spacing: 0.05em;
     }
 
     .stat-card .val {
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.15rem;
+      font-weight: 800;
       color: #ffffff;
     }
 
-    .stat-card .val-orange { color: var(--accent-orange); }
+    .stat-card .val-orange { color: var(--accent-gold); }
     .stat-card .val-red { color: var(--accent-red); }
     .stat-card .val-green { color: var(--accent-green); }
 
     .total-fondo-text {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
       margin-top: 2px;
     }
-    .total-fondo-text strong { color: #ffffff; }
+    .total-fondo-text strong {
+      color: var(--accent-gold);
+      font-weight: 800;
+    }
 
     .btn-backup {
       text-align: center;
       color: var(--text-muted);
-      text-decoration: underline;
       font-size: 0.88rem;
+      font-weight: 600;
       cursor: pointer;
       border: none;
       background: none;
-      margin-top: 2px;
+      margin-top: 4px;
+      text-decoration: underline;
     }
 
-    .history-item, .debt-item {
+    /* LISTA DE HISTORIAL */
+    .history-item {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px;
+      border-radius: 14px;
+      padding: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .btn-delete {
-      background: none;
-      border: none;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
       color: var(--danger);
       font-size: 1.1rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      padding: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-delete:active {
+      background: rgba(239, 68, 68, 0.25);
+      transform: scale(0.94);
+    }
+
+    /* TARJETAS DE DEUDAS */
+    .debt-card {
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .debt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .debt-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .btn-debt-action {
+      border: 1px solid transparent;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-abono {
+      background: rgba(62, 200, 138, 0.12);
+      border-color: rgba(62, 200, 138, 0.35);
+      color: #3ec88a;
+    }
+    .btn-abono:active {
+      background: rgba(62, 200, 138, 0.25);
+      transform: scale(0.97);
+    }
+
+    .btn-aumentar {
+      background: rgba(248, 113, 113, 0.12);
+      border-color: rgba(248, 113, 113, 0.35);
+      color: #f87171;
+    }
+    .btn-aumentar:active {
+      background: rgba(248, 113, 113, 0.25);
+      transform: scale(0.97);
     }
 
     .debt-badge {
-      font-size: 0.75rem;
-      padding: 4px 8px;
-      border-radius: 6px;
+      font-size: 0.72rem;
+      padding: 5px 10px;
+      border-radius: 8px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 800;
+      letter-spacing: 0.04em;
     }
-    .badge-pending { background: #5a2626; color: #ff9d9d; }
-    .badge-paid { background: #16432f; color: #8cf0be; }
+    .badge-pending {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+    .badge-paid {
+      background: rgba(62, 200, 138, 0.15);
+      border: 1px solid rgba(62, 200, 138, 0.3);
+      color: #86efac;
+    }
+
+    /* MODAL FLOTANTE NATIVO (100% LIBRE DE MENSAJES DE GITHUB) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 9999;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background-color: #121c17;
+      border: 1px solid rgba(62, 200, 138, 0.25);
+      border-radius: 20px;
+      padding: 22px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: scaleUp 0.2s ease;
+    }
+
+    @keyframes scaleUp {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .btn-cancel {
+      background-color: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      border-radius: 12px;
+      padding: 13px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .btn-danger-confirm {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+    }
+
+    /* NOTIFICACIÓN TOAST SUAVE (ARRIBA) */
+    .toast-container {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: #172a20;
+      border: 1px solid var(--accent-green);
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      z-index: 10000;
+      pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast-container.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-error {
+      background: #2a1717;
+      border-color: var(--danger);
+      color: #fca5a5;
+    }
 
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
+  <!-- Notificación Toast Flotante -->
+  <div id="toastBox" class="toast-container">
+    <span id="toastIcon">✓</span>
+    <span id="toastMsg">Acción realizada</span>
+  </div>
+
   <div class="app-container">
 
     <header class="header">
       <h1 id="appTitle">Finanza y Deudas<br>de Fidel Alvarez</h1>
       <div class="date-display" id="todayHeaderDate"></div>
-      <span class="change-name" onclick="changeName()">Cambiar nombre</span>
+      <span class="change-name" onclick="openNameModal()">✏️ Cambiar nombre</span>
     </header>
 
     <nav class="nav-tabs">
@@ -373,7 +601,6 @@
           </div>
         </div>
 
-        <!-- Mini resumen -->
         <div class="mini-stats">
           <div class="mini-box">
             <span class="label">GANÉ</span>
@@ -401,7 +628,6 @@
         <button class="btn-save" onclick="saveDay()">Guardar el día</button>
       </section>
 
-      <!-- Resumen del Mes -->
       <section class="card">
         <h2 class="month-header" id="summaryMonthLabel">noviembre de 2026</h2>
 
@@ -453,264 +679,42 @@
     <!-- VISTA DEUDAS -->
     <div id="viewDeudas" class="card hidden">
       <h2 class="month-header">Control de Deudas</h2>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <input type="text" id="debtDesc" placeholder="¿A quién le debes o concepto?" class="large-input" style="font-size:1rem; padding:10px;">
-        <input type="number" id="debtAmount" placeholder="Monto (C$)" class="large-input" style="font-size:1rem; padding:10px;">
-        <button class="btn-save" style="padding:10px; font-size:0.95rem;" onclick="addDebt()">+ Agregar Deuda</button>
+      
+      <div class="stat-card" style="border-color: rgba(239, 68, 68, 0.35);">
+        <span class="label" style="color: var(--accent-red);">TOTAL PENDIENTE POR PAGAR</span>
+        <span class="val val-red" id="totalDebtsDue">C$ 0</span>
       </div>
-      <div id="debtList" style="margin-top:10px;"></div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <input type="text" id="debtDesc" placeholder="¿A quién le debes o concepto?" class="large-input" style="font-size:1rem; padding:12px;">
+        <input type="number" id="debtAmount" placeholder="Monto (C$)" class="large-input" style="font-size:1rem; padding:12px;">
+        <button class="btn-save" style="padding:12px; font-size:0.95rem;" onclick="addDebt()">+ Registrar Deuda</button>
+      </div>
+
+      <div id="debtList" style="margin-top:8px;"></div>
     </div>
 
   </div>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .catch(err => console.log('SW:', err));
-      });
-    }
-
-    let currentPercent = 10;
-    let records = JSON.parse(localStorage.getItem('fidel_records') || '[]');
-    let debts = JSON.parse(localStorage.getItem('fidel_debts') || '[]');
-    let userName = localStorage.getItem('fidel_name') || 'Fidel Alvarez';
-
-    const today = new Date();
-    const formattedTodayDate = today.toISOString().split('T')[0];
-    document.getElementById('inputDate').value = formattedTodayDate;
-
-    function setupHeaderDate() {
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById('todayHeaderDate').innerText = today.toLocaleDateString('es-NI', options);
-      document.getElementById('appTitle').innerHTML = `Finanza y Deudas<br>de ${userName}`;
-    }
-
-    function changeName() {
-      const newName = prompt('Ingresa tu nombre y apellido:', userName);
-      if (newName && newName.trim() !== '') {
-        userName = newName.trim();
-        localStorage.setItem('fidel_name', userName);
-        setupHeaderDate();
-      }
-    }
-
-    function setPercent(val) {
-      currentPercent = val;
-      document.getElementById('btn0').classList.toggle('active', val === 0);
-      document.getElementById('btn10').classList.toggle('active', val === 10);
-      document.getElementById('btn20').classList.toggle('active', val === 20);
-      calculateDaily();
-    }
-
-    // LÓGICA DE BLINDAJE: El Aparto no se toca, el gasto solo reduce lo que queda
-    function calculateDaily() {
-      const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
-      const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
-
-      // 1. Apartado calculado únicamente sobre lo ganado (100% blindado)
-      const aparto = Math.round(gane * (currentPercent / 100));
-
-      // 2. Dinero disponible antes de gastos
-      const disponible = gane - aparto;
-
-      // 3. El gasto se descuenta ÚNICAMENTE de lo disponible
-      const queda = disponible - gasto;
-
-      document.getElementById('boxGane').innerText = `C$ ${gane.toLocaleString()}`;
-      document.getElementById('boxAparto').innerText = `C$ ${aparto.toLocaleString()}`;
-      document.getElementById('boxGasto').innerText = `C$ ${gasto.toLocaleString()}`;
+  <!-- 1. MODAL PARA DEUDAS (ABONAR / AUMENTAR) -->
+  <div id="debtModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 id="modalTitle" style="color:#ffffff; font-size:1.2rem; font-weight:800;">Abonar</h3>
+      <p id="modalSubtitle" style="color:var(--text-muted); font-size:0.88rem; line-height:1.4;"></p>
       
-      const quedaEl = document.getElementById('boxQueda');
-      quedaEl.innerText = `C$ ${queda.toLocaleString()}`;
-      quedaEl.style.color = queda < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
-    }
+      <div>
+        <label class="field-label">MONTO (C$)</label>
+        <input type="number" id="modalInputAmount" class="large-input" placeholder="0" min="1">
+      </div>
 
-    function saveDay() {
-      const dateVal = document.getElementById('inputDate').value;
-      const incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
-      const expenseVal = parseFloat(document.getElementById('inputExpense').value) || 0;
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:6px;">
+        <button class="btn-cancel" onclick="closeDebtModal()">Cancelar</button>
+        <button class="btn-save" id="modalConfirmBtn" style="padding:13px; font-size:0.95rem;" onclick="submitDebtModal()">Confirmar</button>
+      </div>
+    </div>
+  </div>
 
-      if (!dateVal) {
-        alert('Por favor selecciona una fecha');
-        return;
-      }
-      if (incomeVal <= 0 && expenseVal <= 0) {
-        alert('Ingresa una ganancia o un gasto válido.');
-        return;
-      }
-
-      const aparto = Math.round(incomeVal * (currentPercent / 100));
-      const queda = (incomeVal - aparto) - expenseVal;
-
-      records = records.filter(r => r.date !== dateVal);
-      records.push({
-        date: dateVal,
-        gane: incomeVal,
-        gastos: expenseVal,
-        aparto: aparto,
-        queda: queda,
-        percent: currentPercent
-      });
-
-      records.sort((a, b) => new Date(b.date) - new Date(a.date));
-      localStorage.setItem('fidel_records', JSON.stringify(records));
-
-      document.getElementById('inputIncome').value = 0;
-      document.getElementById('inputExpense').value = 0;
-      calculateDaily();
-      updateMonthSummary();
-      renderHistory();
-      alert('¡Día guardado exitosamente!');
-    }
-
-    function updateMonthSummary() {
-      const selectedDate = new Date((document.getElementById('inputDate').value || formattedTodayDate) + 'T00:00:00');
-      const year = selectedDate.getFullYear();
-      const month = selectedDate.getMonth();
-
-      const monthNames = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-      document.getElementById('summaryMonthLabel').innerText = `${monthNames[month]} de ${year}`;
-
-      const monthRecords = records.filter(r => {
-        const d = new Date(r.date + 'T00:00:00');
-        return d.getFullYear() === year && d.getMonth() === month;
-      });
-
-      // El apartado del mes y el acumulado son estrictamente la suma de ahorros (nunca se restan gastos aquí)
-      const ganadoMes = monthRecords.reduce((acc, r) => acc + (r.gane || 0), 0);
-      const apartadoMes = monthRecords.reduce((acc, r) => acc + (r.aparto || 0), 0);
-      const gastosMes = monthRecords.reduce((acc, r) => acc + (r.gastos || 0), 0);
+  <!-- 2. MODAL NATIVO DE CONFIRMACIÓN DE ELIMINACIÓN -->
+  <div id="confirmModal" class="modal-overlay hidden">
+    <div class="modal-content">
       
-      // Lo que te quedó es Ganado - Apartado - Gastos
-      const quedoMes = (ganadoMes - apartadoMes) - gastosMes;
-
-      const diasTrabajados = monthRecords.filter(r => (r.gane || 0) > 0).length;
-      const promedio = diasTrabajados > 0 ? Math.round(ganadoMes / diasTrabajados) : 0;
-      const fondoHistorico = records.reduce((acc, r) => acc + (r.aparto || 0), 0);
-
-      document.getElementById('sumGanado').innerText = `C$ ${ganadoMes.toLocaleString()}`;
-      document.getElementById('sumApartado').innerText = `C$ ${apartadoMes.toLocaleString()}`;
-      document.getElementById('sumGastos').innerText = `C$ ${gastosMes.toLocaleString()}`;
-      
-      const sumQuedoEl = document.getElementById('sumQuedo');
-      sumQuedoEl.innerText = `C$ ${quedoMes.toLocaleString()}`;
-      sumQuedoEl.style.color = quedoMes < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
-
-      document.getElementById('sumDias').innerText = diasTrabajados;
-      document.getElementById('sumPromedio').innerText = `C$ ${promedio.toLocaleString()}`;
-      document.getElementById('sumFondoTotal').innerText = `C$ ${fondoHistorico.toLocaleString()}`;
-    }
-
-    function renderHistory() {
-      const container = document.getElementById('historyList');
-      if (records.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">No hay registros aún.</p>';
-        return;
-      }
-
-      container.innerHTML = records.map((r, index) => `
-        <div class="history-item">
-          <div>
-            <strong style="color:#ffffff;">${r.date}</strong><br>
-            <span style="font-size:0.83rem; color:var(--text-muted);">
-              Ganó: C$ ${(r.gane || 0).toLocaleString()} | Apartado (${r.percent}%): <span style="color:var(--accent-orange);">C$ ${(r.aparto || 0).toLocaleString()}</span><br>
-              Gastó: <span style="color:var(--accent-red);">C$ ${(r.gastos || 0).toLocaleString()}</span> | Quedó: <span style="color:${(r.queda || 0) < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">C$ ${(r.queda || 0).toLocaleString()}</span>
-            </span>
-          </div>
-          <button class="btn-delete" title="Eliminar" onclick="deleteRecord(${index})">✕</button>
-        </div>
-      `).join('');
-    }
-
-    function deleteRecord(index) {
-      if (confirm('¿Deseas eliminar este registro?')) {
-        records.splice(index, 1);
-        localStorage.setItem('fidel_records', JSON.stringify(records));
-        updateMonthSummary();
-        renderHistory();
-      }
-    }
-
-    function renderDebts() {
-      const container = document.getElementById('debtList');
-      if (debts.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">No tienes deudas registradas.</p>';
-        return;
-      }
-
-      container.innerHTML = debts.map((d, index) => `
-        <div class="debt-item">
-          <div>
-            <strong style="color:#ffffff;">${d.desc}</strong><br>
-            <span style="font-size:0.9rem; color:var(--accent-orange); font-weight:700;">C$ ${d.amount.toLocaleString()}</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="debt-badge ${d.paid ? 'badge-paid' : 'badge-pending'}" onclick="toggleDebt(${index})">
-              ${d.paid ? 'PAGADO' : 'PENDIENTE'}
-            </span>
-            <button class="btn-delete" onclick="deleteDebt(${index})">✕</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function addDebt() {
-      const desc = document.getElementById('debtDesc').value.trim();
-      const amount = parseFloat(document.getElementById('debtAmount').value) || 0;
-
-      if (!desc || amount <= 0) {
-        alert('Ingresa una descripción y monto válido');
-        return;
-      }
-
-      debts.push({ desc, amount, paid: false });
-      localStorage.setItem('fidel_debts', JSON.stringify(debts));
-      document.getElementById('debtDesc').value = '';
-      document.getElementById('debtAmount').value = '';
-      renderDebts();
-    }
-
-    function toggleDebt(index) {
-      debts[index].paid = !debts[index].paid;
-      localStorage.setItem('fidel_debts', JSON.stringify(debts));
-      renderDebts();
-    }
-
-    function deleteDebt(index) {
-      if (confirm('¿Eliminar esta deuda?')) {
-        debts.splice(index, 1);
-        localStorage.setItem('fidel_debts', JSON.stringify(debts));
-        renderDebts();
-      }
-    }
-
-    function switchTab(tab) {
-      document.getElementById('tabHoyBtn').classList.toggle('active', tab === 'hoy');
-      document.getElementById('tabHistBtn').classList.toggle('active', tab === 'historial');
-      document.getElementById('tabDeudBtn').classList.toggle('active', tab === 'deudas');
-
-      document.getElementById('viewHoy').classList.toggle('hidden', tab !== 'hoy');
-      document.getElementById('viewHistorial').classList.toggle('hidden', tab !== 'historial');
-      document.getElementById('viewDeudas').classList.toggle('hidden', tab !== 'deudas');
-
-      if (tab === 'historial') renderHistory();
-      if (tab === 'deudas') renderDebts();
-    }
-
-    function exportData() {
-      const data = { name: userName, records: records, debts: debts };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `respaldo_finanzas_${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-    }
-
-    setupHeaderDate();
-    calculateDaily();
-    updateMonthSummary();
-  </script>
-</body>
-</html>
