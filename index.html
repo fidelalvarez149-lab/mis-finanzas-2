@@ -3,8 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0b1511">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Finanza y Deudas</title>
-  <link rel="manifest" href="manifest.json">
+  
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2454/2454269.png">
+
   <style>
     :root {
       --bg-color: #0b1511;
@@ -15,6 +22,7 @@
       --accent-green-hover: #36b57c;
       --accent-dark: #082116;
       --accent-orange: #e5a13c;
+      --accent-red: #ef5350;
       --text-main: #f3f4f6;
       --text-muted: #83978c;
       --danger: #ef4444;
@@ -45,25 +53,19 @@
       gap: 16px;
     }
 
-    /* Encabezado */
-    .header {
-      padding: 8px 4px;
-    }
-
+    .header { padding: 8px 4px; }
     .header h1 {
       font-size: 1.45rem;
       font-weight: 700;
       line-height: 1.25;
       color: #ffffff;
     }
-
     .header .date-display {
       font-size: 0.9rem;
       color: var(--text-muted);
       margin-top: 4px;
       text-transform: capitalize;
     }
-
     .header .change-name {
       font-size: 0.85rem;
       color: var(--text-muted);
@@ -73,7 +75,6 @@
       margin-top: 4px;
     }
 
-    /* Pestañas */
     .nav-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -101,7 +102,6 @@
       border-color: #2f473c;
     }
 
-    /* Tarjetas */
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -109,48 +109,48 @@
       padding: 18px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     .field-label {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 700;
       letter-spacing: 0.05em;
       color: var(--text-muted);
       text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block;
     }
 
-    /* Inputs */
     .large-input {
       width: 100%;
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 1.7rem;
+      padding: 10px 14px;
+      font-size: 1.55rem;
       font-weight: 700;
       color: #ffffff;
       outline: none;
     }
 
-    .large-input:focus {
-      border-color: var(--accent-green);
-    }
+    .large-input:focus { border-color: var(--accent-green); }
+    .input-expense { color: var(--accent-red); }
+    .input-expense:focus { border-color: var(--accent-red); }
 
-    /* Porcentajes 10% y 20% */
     .percent-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
     }
 
     .percent-btn {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
       color: #ffffff;
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      padding: 12px;
+      padding: 10px;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -162,32 +162,30 @@
       border-color: var(--accent-green);
     }
 
-    /* Mini contadores 3 columnas */
     .mini-stats {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
 
     .mini-box {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
-      padding: 10px 8px;
+      padding: 9px 12px;
       border-radius: 12px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
 
     .mini-box .label {
       font-size: 0.68rem;
       font-weight: 700;
       color: var(--text-muted);
-      letter-spacing: 0.04em;
     }
 
     .mini-box .value {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
@@ -196,41 +194,36 @@
 
     .val-gane { color: #ffffff; }
     .val-aparto { color: var(--accent-orange); }
+    .val-gasto { color: var(--accent-red); }
     .val-queda { color: var(--accent-green); }
 
-    /* Fecha picker */
     .date-input {
       width: 100%;
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
       color: #ffffff;
       border-radius: 10px;
-      padding: 12px 14px;
+      padding: 11px 14px;
       font-size: 0.95rem;
       font-weight: 600;
       outline: none;
       color-scheme: dark;
     }
 
-    /* Botón Guardar */
     .btn-save {
       background-color: var(--accent-green);
       color: var(--accent-dark);
       border: none;
       width: 100%;
-      padding: 15px;
+      padding: 14px;
       font-size: 1.05rem;
       font-weight: 700;
       border-radius: 12px;
       cursor: pointer;
-      transition: background-color 0.2s;
     }
 
-    .btn-save:active {
-      background-color: var(--accent-green-hover);
-    }
+    .btn-save:active { background-color: var(--accent-green-hover); }
 
-    /* Resumen del mes */
     .month-header {
       font-size: 1.05rem;
       font-weight: 700;
@@ -240,7 +233,7 @@
     .banner-ganado {
       background-color: var(--accent-green);
       color: var(--accent-dark);
-      padding: 18px;
+      padding: 16px;
       border-radius: 14px;
       display: flex;
       flex-direction: column;
@@ -250,17 +243,15 @@
     .banner-ganado .label {
       font-size: 0.72rem;
       font-weight: 800;
-      letter-spacing: 0.05em;
       opacity: 0.85;
     }
 
     .banner-ganado .amount {
       font-size: 2.1rem;
       font-weight: 800;
-      letter-spacing: -0.02em;
     }
 
-    .grid-2x2 {
+    .grid-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -269,7 +260,7 @@
     .stat-card {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-radius: 12px;
       display: flex;
       flex-direction: column;
@@ -277,32 +268,27 @@
     }
 
     .stat-card .label {
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       font-weight: 700;
       color: var(--text-muted);
-      letter-spacing: 0.05em;
     }
 
     .stat-card .val {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #ffffff;
     }
 
-    .stat-card .val-orange {
-      color: var(--accent-orange);
-    }
+    .stat-card .val-orange { color: var(--accent-orange); }
+    .stat-card .val-red { color: var(--accent-red); }
+    .stat-card .val-green { color: var(--accent-green); }
 
     .total-fondo-text {
-      text-align: left;
       font-size: 0.88rem;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 2px;
     }
-
-    .total-fondo-text strong {
-      color: #ffffff;
-    }
+    .total-fondo-text strong { color: #ffffff; }
 
     .btn-backup {
       text-align: center;
@@ -315,8 +301,7 @@
       margin-top: 2px;
     }
 
-    /* Pestaña Historial y Deudas */
-    .history-item, .debt-item {
+    .history-item {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
@@ -331,16 +316,66 @@
       background: none;
       border: none;
       color: var(--danger);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       cursor: pointer;
       padding: 4px;
     }
 
+    /* ESTILOS DE LA SECCIÓN DEUDAS */
+    .debt-card {
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .debt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .debt-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-debt-action {
+      border: 1px solid transparent;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-abono {
+      background: rgba(46, 204, 113, 0.12);
+      border-color: rgba(46, 204, 113, 0.4);
+      color: #3ec88a;
+    }
+    .btn-abono:active { background: rgba(46, 204, 113, 0.25); }
+
+    .btn-aumentar {
+      background: rgba(239, 83, 80, 0.12);
+      border-color: rgba(239, 83, 80, 0.4);
+      color: #ef5350;
+    }
+    .btn-aumentar:active { background: rgba(239, 83, 80, 0.25); }
+
     .debt-badge {
-      font-size: 0.75rem;
-      padding: 3px 8px;
+      font-size: 0.72rem;
+      padding: 4px 8px;
       border-radius: 6px;
       cursor: pointer;
+      font-weight: 700;
     }
     .badge-pending { background: #5a2626; color: #ff9d9d; }
     .badge-paid { background: #16432f; color: #8cf0be; }
@@ -352,24 +387,21 @@
 
   <div class="app-container">
 
-    <!-- Encabezado -->
     <header class="header">
       <h1 id="appTitle">Finanza y Deudas<br>de Fidel Alvarez</h1>
       <div class="date-display" id="todayHeaderDate"></div>
       <span class="change-name" onclick="changeName()">Cambiar nombre</span>
     </header>
 
-    <!-- Pestañas de navegación -->
     <nav class="nav-tabs">
       <button class="tab-btn active" id="tabHoyBtn" onclick="switchTab('hoy')">Hoy</button>
       <button class="tab-btn" id="tabHistBtn" onclick="switchTab('historial')">Historial</button>
       <button class="tab-btn" id="tabDeudBtn" onclick="switchTab('deudas')">Deudas</button>
     </nav>
 
-    <!-- VISTA: HOY -->
+    <!-- VISTA HOY -->
     <div id="viewHoy" style="display: flex; flex-direction: column; gap: 16px;">
       
-      <!-- Tarjeta Registro Diario -->
       <section class="card">
         <div>
           <label class="field-label">¿CUÁNTO GANÉ HOY? (C$)</label>
@@ -377,8 +409,14 @@
         </div>
 
         <div>
-          <label class="field-label" style="display:block; margin-bottom:8px;">APARTAR PARA EL FONDO</label>
+          <label class="field-label">¿GASTOS DE HOY? (C$)</label>
+          <input type="number" id="inputExpense" class="large-input input-expense" value="0" min="0" oninput="calculateDaily()">
+        </div>
+
+        <div>
+          <label class="field-label">APARTAR PARA EL FONDO (INTOCABLE)</label>
           <div class="percent-row">
+            <button class="percent-btn" id="btn0" onclick="setPercent(0)">0%</button>
             <button class="percent-btn active" id="btn10" onclick="setPercent(10)">10%</button>
             <button class="percent-btn" id="btn20" onclick="setPercent(20)">20%</button>
           </div>
@@ -390,8 +428,12 @@
             <span class="value val-gane" id="boxGane">C$ 0</span>
           </div>
           <div class="mini-box">
-            <span class="label">APARTO</span>
+            <span class="label">APARTO (INTACTO)</span>
             <span class="value val-aparto" id="boxAparto">C$ 0</span>
+          </div>
+          <div class="mini-box">
+            <span class="label">GASTOS</span>
+            <span class="value val-gasto" id="boxGasto">C$ 0</span>
           </div>
           <div class="mini-box">
             <span class="label">ME QUEDA</span>
@@ -400,14 +442,13 @@
         </div>
 
         <div>
-          <label class="field-label" style="display:block; margin-bottom:6px;">FECHA</label>
+          <label class="field-label">FECHA</label>
           <input type="date" id="inputDate" class="date-input" onchange="updateMonthSummary()">
         </div>
 
         <button class="btn-save" onclick="saveDay()">Guardar el día</button>
       </section>
 
-      <!-- Tarjeta Resumen Mensual -->
       <section class="card">
         <h2 class="month-header" id="summaryMonthLabel">noviembre de 2026</h2>
 
@@ -416,21 +457,25 @@
           <span class="amount" id="sumGanado">C$ 0</span>
         </div>
 
-        <div class="grid-2x2">
+        <div class="grid-stats">
           <div class="stat-card">
-            <span class="label">APARTADO</span>
+            <span class="label">FONDO APARTADO (INTACTO)</span>
             <span class="val val-orange" id="sumApartado">C$ 0</span>
           </div>
           <div class="stat-card">
+            <span class="label">GASTOS DEL MES</span>
+            <span class="val val-red" id="sumGastos">C$ 0</span>
+          </div>
+          <div class="stat-card">
             <span class="label">TE QUEDÓ</span>
-            <span class="val" id="sumQuedo">C$ 0</span>
+            <span class="val val-green" id="sumQuedo">C$ 0</span>
           </div>
           <div class="stat-card">
             <span class="label">DÍAS TRABAJADOS</span>
             <span class="val" id="sumDias">0</span>
           </div>
-          <div class="stat-card">
-            <span class="label">PROMEDIO POR DÍA</span>
+          <div class="stat-card" style="grid-column: span 2;">
+            <span class="label">PROMEDIO POR DÍA TRABAJADO</span>
             <span class="val" id="sumPromedio">C$ 0</span>
           </div>
         </div>
@@ -444,7 +489,7 @@
 
     </div>
 
-    <!-- VISTA: HISTORIAL -->
+    <!-- VISTA HISTORIAL -->
     <div id="viewHistorial" class="card hidden">
       <h2 class="month-header">Historial de Registros</h2>
       <div id="historyList">
@@ -452,17 +497,23 @@
       </div>
     </div>
 
-    <!-- VISTA: DEUDAS -->
+    <!-- VISTA DEUDAS -->
     <div id="viewDeudas" class="card hidden">
       <h2 class="month-header">Control de Deudas</h2>
       
+      <!-- Total Deudas Pendientes -->
+      <div class="stat-card" style="border-color: rgba(239, 83, 80, 0.3);">
+        <span class="label" style="color: var(--accent-red);">TOTAL PENDIENTE POR PAGAR</span>
+        <span class="val val-red" id="totalDebtsDue">C$ 0</span>
+      </div>
+
       <div style="display:flex; flex-direction:column; gap:8px;">
         <input type="text" id="debtDesc" placeholder="¿A quién le debes o concepto?" class="large-input" style="font-size:1rem; padding:10px;">
         <input type="number" id="debtAmount" placeholder="Monto (C$)" class="large-input" style="font-size:1rem; padding:10px;">
-        <button class="btn-save" style="padding:10px; font-size:0.95rem;" onclick="addDebt()">+ Agregar Deuda</button>
+        <button class="btn-save" style="padding:10px; font-size:0.95rem;" onclick="addDebt()">+ Registrar Deuda</button>
       </div>
 
-      <div id="debtList" style="margin-top:10px;"></div>
+      <div id="debtList" style="margin-top:8px;"></div>
     </div>
 
   </div>
@@ -470,7 +521,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW:', err));
       });
     }
 
@@ -500,6 +551,7 @@
 
     function setPercent(val) {
       currentPercent = val;
+      document.getElementById('btn0').classList.toggle('active', val === 0);
       document.getElementById('btn10').classList.toggle('active', val === 10);
       document.getElementById('btn20').classList.toggle('active', val === 20);
       calculateDaily();
@@ -507,34 +559,44 @@
 
     function calculateDaily() {
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
+      const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
+
+      // El apartado es exclusivo del ingreso (intocable)
       const aparto = Math.round(gane * (currentPercent / 100));
-      const queda = gane - aparto;
+      const disponible = gane - aparto;
+      const queda = disponible - gasto;
 
       document.getElementById('boxGane').innerText = `C$ ${gane.toLocaleString()}`;
       document.getElementById('boxAparto').innerText = `C$ ${aparto.toLocaleString()}`;
-      document.getElementById('boxQueda').innerText = `C$ ${queda.toLocaleString()}`;
+      document.getElementById('boxGasto').innerText = `C$ ${gasto.toLocaleString()}`;
+      
+      const quedaEl = document.getElementById('boxQueda');
+      quedaEl.innerText = `C$ ${queda.toLocaleString()}`;
+      quedaEl.style.color = queda < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
     }
 
     function saveDay() {
       const dateVal = document.getElementById('inputDate').value;
       const incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
+      const expenseVal = parseFloat(document.getElementById('inputExpense').value) || 0;
 
       if (!dateVal) {
         alert('Por favor selecciona una fecha');
         return;
       }
-      if (incomeVal <= 0) {
-        alert('Ingresa un monto ganado mayor a 0');
+      if (incomeVal <= 0 && expenseVal <= 0) {
+        alert('Ingresa una ganancia o un gasto válido.');
         return;
       }
 
       const aparto = Math.round(incomeVal * (currentPercent / 100));
-      const queda = incomeVal - aparto;
+      const queda = (incomeVal - aparto) - expenseVal;
 
       records = records.filter(r => r.date !== dateVal);
       records.push({
         date: dateVal,
         gane: incomeVal,
+        gastos: expenseVal,
         aparto: aparto,
         queda: queda,
         percent: currentPercent
@@ -544,6 +606,7 @@
       localStorage.setItem('fidel_records', JSON.stringify(records));
 
       document.getElementById('inputIncome').value = 0;
+      document.getElementById('inputExpense').value = 0;
       calculateDaily();
       updateMonthSummary();
       renderHistory();
@@ -563,16 +626,23 @@
         return d.getFullYear() === year && d.getMonth() === month;
       });
 
-      const ganadoMes = monthRecords.reduce((acc, r) => acc + r.gane, 0);
-      const apartadoMes = monthRecords.reduce((acc, r) => acc + r.aparto, 0);
-      const quedoMes = monthRecords.reduce((acc, r) => acc + r.queda, 0);
-      const diasTrabajados = monthRecords.length;
+      const ganadoMes = monthRecords.reduce((acc, r) => acc + (r.gane || 0), 0);
+      const apartadoMes = monthRecords.reduce((acc, r) => acc + (r.aparto || 0), 0);
+      const gastosMes = monthRecords.reduce((acc, r) => acc + (r.gastos || 0), 0);
+      const quedoMes = (ganadoMes - apartadoMes) - gastosMes;
+
+      const diasTrabajados = monthRecords.filter(r => (r.gane || 0) > 0).length;
       const promedio = diasTrabajados > 0 ? Math.round(ganadoMes / diasTrabajados) : 0;
-      const fondoHistorico = records.reduce((acc, r) => acc + r.aparto, 0);
+      const fondoHistorico = records.reduce((acc, r) => acc + (r.aparto || 0), 0);
 
       document.getElementById('sumGanado').innerText = `C$ ${ganadoMes.toLocaleString()}`;
       document.getElementById('sumApartado').innerText = `C$ ${apartadoMes.toLocaleString()}`;
-      document.getElementById('sumQuedo').innerText = `C$ ${quedoMes.toLocaleString()}`;
+      document.getElementById('sumGastos').innerText = `C$ ${gastosMes.toLocaleString()}`;
+      
+      const sumQuedoEl = document.getElementById('sumQuedo');
+      sumQuedoEl.innerText = `C$ ${quedoMes.toLocaleString()}`;
+      sumQuedoEl.style.color = quedoMes < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
+
       document.getElementById('sumDias').innerText = diasTrabajados;
       document.getElementById('sumPromedio').innerText = `C$ ${promedio.toLocaleString()}`;
       document.getElementById('sumFondoTotal').innerText = `C$ ${fondoHistorico.toLocaleString()}`;
@@ -589,8 +659,9 @@
         <div class="history-item">
           <div>
             <strong style="color:#ffffff;">${r.date}</strong><br>
-            <span style="font-size:0.85rem; color:var(--text-muted);">
-              Ganó: C$ ${r.gane.toLocaleString()} | Ahorro (${r.percent}%): <span style="color:var(--accent-orange);">C$ ${r.aparto.toLocaleString()}</span>
+            <span style="font-size:0.83rem; color:var(--text-muted);">
+              Ganó: C$ ${(r.gane || 0).toLocaleString()} | Apartado (${r.percent}%): <span style="color:var(--accent-orange);">C$ ${(r.aparto || 0).toLocaleString()}</span><br>
+              Gastó: <span style="color:var(--accent-red);">C$ ${(r.gastos || 0).toLocaleString()}</span> | Quedó: <span style="color:${(r.queda || 0) < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">C$ ${(r.queda || 0).toLocaleString()}</span>
             </span>
           </div>
           <button class="btn-delete" title="Eliminar" onclick="deleteRecord(${index})">✕</button>
@@ -607,24 +678,40 @@
       }
     }
 
+    // GESTIÓN DE DEUDAS (ABONAR Y AUMENTAR)
     function renderDebts() {
       const container = document.getElementById('debtList');
+      const totalDueEl = document.getElementById('totalDebtsDue');
+
+      // Calcular total pendiente
+      const totalDue = debts.filter(d => !d.paid).reduce((acc, d) => acc + (d.amount || 0), 0);
+      totalDueEl.innerText = `C$ ${totalDue.toLocaleString()}`;
+
       if (debts.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">No tienes deudas registradas.</p>';
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;">No tienes deudas registradas.</p>';
         return;
       }
 
       container.innerHTML = debts.map((d, index) => `
-        <div class="debt-item">
-          <div>
-            <strong style="color:#ffffff;">${d.desc}</strong><br>
-            <span style="font-size:0.9rem; color:var(--accent-orange); font-weight:700;">C$ ${d.amount.toLocaleString()}</span>
+        <div class="debt-card">
+          <div class="debt-header">
+            <div>
+              <strong style="color:#ffffff; font-size:1.05rem;">${d.desc}</strong>
+              <div style="font-size:1.25rem; color:${d.paid ? 'var(--text-muted)' : 'var(--accent-orange)'}; font-weight:800; margin-top:3px;">
+                C$ ${(d.amount || 0).toLocaleString()}
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="debt-badge ${d.paid ? 'badge-paid' : 'badge-pending'}" onclick="toggleDebt(${index})">
+                ${d.paid ? 'PAGADO' : 'PENDIENTE'}
+              </span>
+              <button class="btn-delete" title="Eliminar" onclick="deleteDebt(${index})">✕</button>
+            </div>
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="debt-badge ${d.paid ? 'badge-paid' : 'badge-pending'}" onclick="toggleDebt(${index})">
-              ${d.paid ? 'PAGADO' : 'PENDIENTE'}
-            </span>
-            <button class="btn-delete" onclick="deleteDebt(${index})">✕</button>
+
+          <div class="debt-actions">
+            <button class="btn-debt-action btn-abono" onclick="payDebt(${index})">💵 Abonar</button>
+            <button class="btn-debt-action btn-aumentar" onclick="increaseDebt(${index})">📈 Aumentar deuda</button>
           </div>
         </div>
       `).join('');
@@ -644,6 +731,55 @@
       document.getElementById('debtDesc').value = '';
       document.getElementById('debtAmount').value = '';
       renderDebts();
+    }
+
+    // Función Abonar
+    function payDebt(index) {
+      const d = debts[index];
+      if (d.paid || d.amount <= 0) {
+        alert('Esta deuda ya se encuentra totalmente saldada.');
+        return;
+      }
+
+      const val = prompt(`¿Cuánto vas a abonar a "${d.desc}"?\nSaldo pendiente actual: C$ ${d.amount.toLocaleString()}`);
+      if (val === null) return;
+      const abono = parseFloat(val) || 0;
+
+      if (abono <= 0) {
+        alert('Ingresa un monto válido mayor a 0');
+        return;
+      }
+
+      if (abono >= d.amount) {
+        d.amount = 0;
+        d.paid = true;
+        alert(`¡Felicidades! Has liquidado por completo la deuda "${d.desc}".`);
+      } else {
+        d.amount -= abono;
+        alert(`Abono registrado. Nuevo saldo restante: C$ ${d.amount.toLocaleString()}`);
+      }
+
+      localStorage.setItem('fidel_debts', JSON.stringify(debts));
+      renderDebts();
+    }
+
+    // Función Aumentar Deuda
+    function increaseDebt(index) {
+      const d = debts[index];
+      const val = prompt(`¿Cuánto deseas agregar a la deuda de "${d.desc}"?\nSaldo actual: C$ ${d.amount.toLocaleString()}`);
+      if (val === null) return;
+      const aumento = parseFloat(val) || 0;
+
+      if (aumento <= 0) {
+        alert('Ingresa un monto válido mayor a 0');
+        return;
+      }
+
+      d.amount += aumento;
+      d.paid = false; // Vuelve a estar pendiente si estaba pagada
+      localStorage.setItem('fidel_debts', JSON.stringify(debts));
+      renderDebts();
+      alert(`Deuda aumentada. Nuevo saldo a pagar: C$ ${d.amount.toLocaleString()}`);
     }
 
     function toggleDebt(index) {
