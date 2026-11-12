@@ -14,6 +14,7 @@
       --accent-green-hover: #36b57c;
       --accent-dark: #082116;
       --accent-orange: #e5a13c;
+      --accent-red: #ef5350;
       --text-main: #f3f4f6;
       --text-muted: #83978c;
       --danger: #ef4444;
@@ -108,15 +109,17 @@
       padding: 18px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     .field-label {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 700;
       letter-spacing: 0.05em;
       color: var(--text-muted);
       text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block;
     }
 
     /* Inputs */
@@ -125,8 +128,8 @@
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 1.7rem;
+      padding: 10px 14px;
+      font-size: 1.55rem;
       font-weight: 700;
       color: #ffffff;
       outline: none;
@@ -136,20 +139,27 @@
       border-color: var(--accent-green);
     }
 
-    /* Porcentajes */
+    .input-expense {
+      color: var(--accent-red);
+    }
+    .input-expense:focus {
+      border-color: var(--accent-red);
+    }
+
+    /* Porcentajes (3 columnas: 0%, 10%, 20%) */
     .percent-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
     }
 
     .percent-btn {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
       color: #ffffff;
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      padding: 12px;
+      padding: 10px;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -161,21 +171,21 @@
       border-color: var(--accent-green);
     }
 
-    /* Mini contadores 3 columnas */
+    /* Mini contadores en cuadrícula 2x2 */
     .mini-stats {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
 
     .mini-box {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
-      padding: 10px 8px;
+      padding: 9px 12px;
       border-radius: 12px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
 
     .mini-box .label {
@@ -186,7 +196,7 @@
     }
 
     .mini-box .value {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
@@ -195,6 +205,7 @@
 
     .val-gane { color: #ffffff; }
     .val-aparto { color: var(--accent-orange); }
+    .val-gasto { color: var(--accent-red); }
     .val-queda { color: var(--accent-green); }
 
     /* Fecha picker */
@@ -204,7 +215,7 @@
       border: 1px solid var(--card-border);
       color: #ffffff;
       border-radius: 10px;
-      padding: 12px 14px;
+      padding: 11px 14px;
       font-size: 0.95rem;
       font-weight: 600;
       outline: none;
@@ -217,7 +228,7 @@
       color: var(--accent-dark);
       border: none;
       width: 100%;
-      padding: 15px;
+      padding: 14px;
       font-size: 1.05rem;
       font-weight: 700;
       border-radius: 12px;
@@ -239,7 +250,7 @@
     .banner-ganado {
       background-color: var(--accent-green);
       color: var(--accent-dark);
-      padding: 18px;
+      padding: 16px;
       border-radius: 14px;
       display: flex;
       flex-direction: column;
@@ -259,7 +270,7 @@
       letter-spacing: -0.02em;
     }
 
-    .grid-2x2 {
+    .grid-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -268,7 +279,7 @@
     .stat-card {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-radius: 12px;
       display: flex;
       flex-direction: column;
@@ -276,27 +287,26 @@
     }
 
     .stat-card .label {
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       font-weight: 700;
       color: var(--text-muted);
       letter-spacing: 0.05em;
     }
 
     .stat-card .val {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #ffffff;
     }
 
-    .stat-card .val-orange {
-      color: var(--accent-orange);
-    }
+    .stat-card .val-orange { color: var(--accent-orange); }
+    .stat-card .val-red { color: var(--accent-red); }
+    .stat-card .val-green { color: var(--accent-green); }
 
     .total-fondo-text {
-      text-align: left;
       font-size: 0.88rem;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .total-fondo-text strong {
@@ -337,9 +347,10 @@
 
     .debt-badge {
       font-size: 0.75rem;
-      padding: 3px 8px;
+      padding: 4px 8px;
       border-radius: 6px;
       cursor: pointer;
+      font-weight: 600;
     }
     .badge-pending { background: #5a2626; color: #ff9d9d; }
     .badge-paid { background: #16432f; color: #8cf0be; }
@@ -376,13 +387,20 @@
         </div>
 
         <div>
-          <label class="field-label" style="display:block; margin-bottom:8px;">APARTAR PARA EL FONDO</label>
+          <label class="field-label">¿GASTOS DE HOY? (C$)</label>
+          <input type="number" id="inputExpense" class="large-input input-expense" value="0" min="0" oninput="calculateDaily()">
+        </div>
+
+        <div>
+          <label class="field-label">APARTAR PARA EL FONDO</label>
           <div class="percent-row">
+            <button class="percent-btn" id="btn0" onclick="setPercent(0)">0%</button>
             <button class="percent-btn active" id="btn10" onclick="setPercent(10)">10%</button>
             <button class="percent-btn" id="btn20" onclick="setPercent(20)">20%</button>
           </div>
         </div>
 
+        <!-- 4 mini cajas ordenadas: Gané, Aparto, Gastos y Me Queda -->
         <div class="mini-stats">
           <div class="mini-box">
             <span class="label">GANÉ</span>
@@ -393,13 +411,17 @@
             <span class="value val-aparto" id="boxAparto">C$ 0</span>
           </div>
           <div class="mini-box">
+            <span class="label">GASTOS</span>
+            <span class="value val-gasto" id="boxGasto">C$ 0</span>
+          </div>
+          <div class="mini-box">
             <span class="label">ME QUEDA</span>
             <span class="value val-queda" id="boxQueda">C$ 0</span>
           </div>
         </div>
 
         <div>
-          <label class="field-label" style="display:block; margin-bottom:6px;">FECHA</label>
+          <label class="field-label">FECHA</label>
           <input type="date" id="inputDate" class="date-input" onchange="updateMonthSummary()">
         </div>
 
@@ -415,21 +437,25 @@
           <span class="amount" id="sumGanado">C$ 0</span>
         </div>
 
-        <div class="grid-2x2">
+        <div class="grid-stats">
           <div class="stat-card">
             <span class="label">APARTADO</span>
             <span class="val val-orange" id="sumApartado">C$ 0</span>
           </div>
           <div class="stat-card">
+            <span class="label">GASTOS DEL MES</span>
+            <span class="val val-red" id="sumGastos">C$ 0</span>
+          </div>
+          <div class="stat-card">
             <span class="label">TE QUEDÓ</span>
-            <span class="val" id="sumQuedo">C$ 0</span>
+            <span class="val val-green" id="sumQuedo">C$ 0</span>
           </div>
           <div class="stat-card">
             <span class="label">DÍAS TRABAJADOS</span>
             <span class="val" id="sumDias">0</span>
           </div>
-          <div class="stat-card">
-            <span class="label">PROMEDIO POR DÍA</span>
+          <div class="stat-card" style="grid-column: span 2;">
+            <span class="label">PROMEDIO POR DÍA TRABAJADO</span>
             <span class="val" id="sumPromedio">C$ 0</span>
           </div>
         </div>
@@ -462,25 +488,23 @@
       </div>
 
       <div id="debtList" style="margin-top:10px;">
-        <!-- Elementos de deuda -->
+        <!-- Lista de deudas -->
       </div>
     </div>
 
   </div>
 
   <script>
-    // Inicialización del Estado
     let currentPercent = 10;
     let records = JSON.parse(localStorage.getItem('fidel_records') || '[]');
     let debts = JSON.parse(localStorage.getItem('fidel_debts') || '[]');
     let userName = localStorage.getItem('fidel_name') || 'Fidel Alvarez';
 
-    // Establecer fecha por defecto (hoy)
+    // Fecha actual
     const today = new Date();
     const formattedTodayDate = today.toISOString().split('T')[0];
     document.getElementById('inputDate').value = formattedTodayDate;
 
-    // Configurar fechas y textos
     function setupHeaderDate() {
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       document.getElementById('todayHeaderDate').innerText = today.toLocaleDateString('es-NI', options);
@@ -498,54 +522,62 @@
 
     function setPercent(val) {
       currentPercent = val;
+      document.getElementById('btn0').classList.toggle('active', val === 0);
       document.getElementById('btn10').classList.toggle('active', val === 10);
       document.getElementById('btn20').classList.toggle('active', val === 20);
       calculateDaily();
     }
 
+    // Calcula automáticamente Gané, Apartado, Gastos y Me Queda
     function calculateDaily() {
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
+      const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
+      
       const aparto = Math.round(gane * (currentPercent / 100));
-      const queda = gane - aparto;
+      const queda = gane - aparto - gasto;
 
       document.getElementById('boxGane').innerText = `C$ ${gane.toLocaleString()}`;
       document.getElementById('boxAparto').innerText = `C$ ${aparto.toLocaleString()}`;
-      document.getElementById('boxQueda').innerText = `C$ ${queda.toLocaleString()}`;
+      document.getElementById('boxGasto').innerText = `C$ ${gasto.toLocaleString()}`;
+      
+      const quedaEl = document.getElementById('boxQueda');
+      quedaEl.innerText = `C$ ${queda.toLocaleString()}`;
+      quedaEl.style.color = queda < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
     }
 
     function saveDay() {
       const dateVal = document.getElementById('inputDate').value;
       const incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
+      const expenseVal = parseFloat(document.getElementById('inputExpense').value) || 0;
 
       if (!dateVal) {
         alert('Por favor selecciona una fecha');
         return;
       }
-      if (incomeVal <= 0) {
-        alert('Ingresa un monto ganado mayor a 0');
+      if (incomeVal <= 0 && expenseVal <= 0) {
+        alert('Ingresa una ganancia o un gasto válido.');
         return;
       }
 
       const aparto = Math.round(incomeVal * (currentPercent / 100));
-      const queda = incomeVal - aparto;
+      const queda = incomeVal - aparto - expenseVal;
 
-      // Si ya existe registro de ese día, se actualiza o se agrega uno nuevo
       records = records.filter(r => r.date !== dateVal);
       records.push({
         date: dateVal,
         gane: incomeVal,
+        gastos: expenseVal,
         aparto: aparto,
         queda: queda,
         percent: currentPercent
       });
 
-      // Ordenar por fecha descendente
       records.sort((a, b) => new Date(b.date) - new Date(a.date));
-
       localStorage.setItem('fidel_records', JSON.stringify(records));
-      
-      // Limpiar input y recalcular
+
+      // Limpiar campos
       document.getElementById('inputIncome').value = 0;
+      document.getElementById('inputExpense').value = 0;
       calculateDaily();
       updateMonthSummary();
       renderHistory();
@@ -553,38 +585,40 @@
     }
 
     function updateMonthSummary() {
-      const selectedDate = new Date(document.getElementById('inputDate').value || formattedTodayDate);
+      const selectedDate = new Date((document.getElementById('inputDate').value || formattedTodayDate) + 'T00:00:00');
       const year = selectedDate.getFullYear();
       const month = selectedDate.getMonth();
 
-      // Formato para el título del mes (ej. noviembre de 2026)
       const monthNames = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
       document.getElementById('summaryMonthLabel').innerText = `${monthNames[month]} de ${year}`;
 
-      // Filtrar registros del mes seleccionado
       const monthRecords = records.filter(r => {
         const d = new Date(r.date + 'T00:00:00');
         return d.getFullYear() === year && d.getMonth() === month;
       });
 
-      const ganadoMes = monthRecords.reduce((acc, r) => acc + r.gane, 0);
-      const apartadoMes = monthRecords.reduce((acc, r) => acc + r.aparto, 0);
-      const quedoMes = monthRecords.reduce((acc, r) => acc + r.queda, 0);
-      const diasTrabajados = monthRecords.length;
-      const promedio = diasTrabajados > 0 ? Math.round(ganadoMes / diasTrabajados) : 0;
+      const ganadoMes = monthRecords.reduce((acc, r) => acc + (r.gane || 0), 0);
+      const apartadoMes = monthRecords.reduce((acc, r) => acc + (r.aparto || 0), 0);
+      const gastosMes = monthRecords.reduce((acc, r) => acc + (r.gastos || 0), 0);
+      const quedoMes = ganadoMes - apartadoMes - gastosMes;
 
-      // Fondo histórico de todos los tiempos
-      const fondoHistorico = records.reduce((acc, r) => acc + r.aparto, 0);
+      const diasTrabajados = monthRecords.filter(r => (r.gane || 0) > 0).length;
+      const promedio = diasTrabajados > 0 ? Math.round(ganadoMes / diasTrabajados) : 0;
+      const fondoHistorico = records.reduce((acc, r) => acc + (r.aparto || 0), 0);
 
       document.getElementById('sumGanado').innerText = `C$ ${ganadoMes.toLocaleString()}`;
       document.getElementById('sumApartado').innerText = `C$ ${apartadoMes.toLocaleString()}`;
-      document.getElementById('sumQuedo').innerText = `C$ ${quedoMes.toLocaleString()}`;
+      document.getElementById('sumGastos').innerText = `C$ ${gastosMes.toLocaleString()}`;
+      
+      const sumQuedoEl = document.getElementById('sumQuedo');
+      sumQuedoEl.innerText = `C$ ${quedoMes.toLocaleString()}`;
+      sumQuedoEl.style.color = quedoMes < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
+
       document.getElementById('sumDias').innerText = diasTrabajados;
       document.getElementById('sumPromedio').innerText = `C$ ${promedio.toLocaleString()}`;
       document.getElementById('sumFondoTotal').innerText = `C$ ${fondoHistorico.toLocaleString()}`;
     }
 
-    // Historial
     function renderHistory() {
       const container = document.getElementById('historyList');
       if (records.length === 0) {
@@ -596,8 +630,9 @@
         <div class="history-item">
           <div>
             <strong style="color:#ffffff;">${r.date}</strong><br>
-            <span style="font-size:0.85rem; color:var(--text-muted);">
-              Ganó: C$ ${r.gane.toLocaleString()} | Ahorro (${r.percent}%): <span style="color:var(--accent-orange);">C$ ${r.aparto.toLocaleString()}</span>
+            <span style="font-size:0.83rem; color:var(--text-muted);">
+              Ganó: C$ ${(r.gane || 0).toLocaleString()} | Fondo (${r.percent}%): <span style="color:var(--accent-orange);">C$ ${(r.aparto || 0).toLocaleString()}</span><br>
+              Gastó: <span style="color:var(--accent-red);">C$ ${(r.gastos || 0).toLocaleString()}</span> | Quedó: <span style="color:${(r.queda || 0) < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">C$ ${(r.queda || 0).toLocaleString()}</span>
             </span>
           </div>
           <button class="btn-delete" title="Eliminar" onclick="deleteRecord(${index})">✕</button>
@@ -614,7 +649,6 @@
       }
     }
 
-    // Deudas
     function renderDebts() {
       const container = document.getElementById('debtList');
       if (debts.length === 0) {
@@ -668,7 +702,6 @@
       }
     }
 
-    // Control de pestañas
     function switchTab(tab) {
       document.getElementById('tabHoyBtn').classList.toggle('active', tab === 'hoy');
       document.getElementById('tabHistBtn').classList.toggle('active', tab === 'historial');
@@ -682,7 +715,6 @@
       if (tab === 'deudas') renderDebts();
     }
 
-    // Respaldo de datos
     function exportData() {
       const data = {
         name: userName,
@@ -697,7 +729,6 @@
       a.click();
     }
 
-    // Carga inicial
     setupHeaderDate();
     calculateDaily();
     updateMonthSummary();
