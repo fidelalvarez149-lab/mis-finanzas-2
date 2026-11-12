@@ -13,20 +13,43 @@
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2454/2454269.png">
 
   <style>
-    :root {
-      --bg-color: #070d0a;
-      --card-bg: #101914;
-      --card-border: rgba(62, 200, 138, 0.12);
-      --card-hover: #15221b;
-      --input-bg: #0c1410;
-      --accent-green: #3ec88a;
-      --accent-green-glow: rgba(62, 200, 138, 0.25);
-      --accent-dark: #051a10;
-      --accent-gold: #f59e0b;
-      --accent-red: #f87171;
-      --danger: #ef4444;
-      --text-main: #f9fafb;
-      --text-muted: #82958b;
+    :root {/* BARRA FLOTANTE DE ACTUALIZACIÓN */
+    .update-banner {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 400px;
+      background: #14251c;
+      border: 1px solid var(--accent-green);
+      padding: 14px 16px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      z-index: 10001;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+
+    .btn-update-now {
+      background: var(--accent-green);
+      color: var(--accent-dark);
+      border: none;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
     }
 
     * {
