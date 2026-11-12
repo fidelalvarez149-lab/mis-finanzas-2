@@ -1,5 +1,5 @@
 // Cada vez que hagas una mejora en la app, cámbiale el número aquí (ej: v4, v5, etc.)
-const CACHE_NAME = 'finanzas-v4';
+const CACHE_NAME = 'finanzas-v5';
 
 const urlsToCache = [
   './',
