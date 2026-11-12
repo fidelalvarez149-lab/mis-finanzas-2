@@ -301,7 +301,7 @@
       margin-top: 2px;
     }
 
-    .history-item, .debt-item {
+    .history-item {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
@@ -316,17 +316,66 @@
       background: none;
       border: none;
       color: var(--danger);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       cursor: pointer;
       padding: 4px;
     }
 
+    /* ESTILOS DE LA SECCIÓN DEUDAS */
+    .debt-card {
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .debt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .debt-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-debt-action {
+      border: 1px solid transparent;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-abono {
+      background: rgba(46, 204, 113, 0.12);
+      border-color: rgba(46, 204, 113, 0.4);
+      color: #3ec88a;
+    }
+    .btn-abono:active { background: rgba(46, 204, 113, 0.25); }
+
+    .btn-aumentar {
+      background: rgba(239, 83, 80, 0.12);
+      border-color: rgba(239, 83, 80, 0.4);
+      color: #ef5350;
+    }
+    .btn-aumentar:active { background: rgba(239, 83, 80, 0.25); }
+
     .debt-badge {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       padding: 4px 8px;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
     }
     .badge-pending { background: #5a2626; color: #ff9d9d; }
     .badge-paid { background: #16432f; color: #8cf0be; }
@@ -373,7 +422,6 @@
           </div>
         </div>
 
-        <!-- Mini resumen -->
         <div class="mini-stats">
           <div class="mini-box">
             <span class="label">GANÉ</span>
@@ -401,7 +449,6 @@
         <button class="btn-save" onclick="saveDay()">Guardar el día</button>
       </section>
 
-      <!-- Resumen del Mes -->
       <section class="card">
         <h2 class="month-header" id="summaryMonthLabel">noviembre de 2026</h2>
 
@@ -453,12 +500,20 @@
     <!-- VISTA DEUDAS -->
     <div id="viewDeudas" class="card hidden">
       <h2 class="month-header">Control de Deudas</h2>
+      
+      <!-- Total Deudas Pendientes -->
+      <div class="stat-card" style="border-color: rgba(239, 83, 80, 0.3);">
+        <span class="label" style="color: var(--accent-red);">TOTAL PENDIENTE POR PAGAR</span>
+        <span class="val val-red" id="totalDebtsDue">C$ 0</span>
+      </div>
+
       <div style="display:flex; flex-direction:column; gap:8px;">
         <input type="text" id="debtDesc" placeholder="¿A quién le debes o concepto?" class="large-input" style="font-size:1rem; padding:10px;">
         <input type="number" id="debtAmount" placeholder="Monto (C$)" class="large-input" style="font-size:1rem; padding:10px;">
-        <button class="btn-save" style="padding:10px; font-size:0.95rem;" onclick="addDebt()">+ Agregar Deuda</button>
+        <button class="btn-save" style="padding:10px; font-size:0.95rem;" onclick="addDebt()">+ Registrar Deuda</button>
       </div>
-      <div id="debtList" style="margin-top:10px;"></div>
+
+      <div id="debtList" style="margin-top:8px;"></div>
     </div>
 
   </div>
@@ -466,8 +521,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .catch(err => console.log('SW:', err));
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW:', err));
       });
     }
 
@@ -503,18 +557,13 @@
       calculateDaily();
     }
 
-    // LÓGICA DE BLINDAJE: El Aparto no se toca, el gasto solo reduce lo que queda
     function calculateDaily() {
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
       const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
 
-      // 1. Apartado calculado únicamente sobre lo ganado (100% blindado)
+      // El apartado es exclusivo del ingreso (intocable)
       const aparto = Math.round(gane * (currentPercent / 100));
-
-      // 2. Dinero disponible antes de gastos
       const disponible = gane - aparto;
-
-      // 3. El gasto se descuenta ÚNICAMENTE de lo disponible
       const queda = disponible - gasto;
 
       document.getElementById('boxGane').innerText = `C$ ${gane.toLocaleString()}`;
@@ -577,12 +626,9 @@
         return d.getFullYear() === year && d.getMonth() === month;
       });
 
-      // El apartado del mes y el acumulado son estrictamente la suma de ahorros (nunca se restan gastos aquí)
       const ganadoMes = monthRecords.reduce((acc, r) => acc + (r.gane || 0), 0);
       const apartadoMes = monthRecords.reduce((acc, r) => acc + (r.aparto || 0), 0);
       const gastosMes = monthRecords.reduce((acc, r) => acc + (r.gastos || 0), 0);
-      
-      // Lo que te quedó es Ganado - Apartado - Gastos
       const quedoMes = (ganadoMes - apartadoMes) - gastosMes;
 
       const diasTrabajados = monthRecords.filter(r => (r.gane || 0) > 0).length;
@@ -632,24 +678,40 @@
       }
     }
 
+    // GESTIÓN DE DEUDAS (ABONAR Y AUMENTAR)
     function renderDebts() {
       const container = document.getElementById('debtList');
+      const totalDueEl = document.getElementById('totalDebtsDue');
+
+      // Calcular total pendiente
+      const totalDue = debts.filter(d => !d.paid).reduce((acc, d) => acc + (d.amount || 0), 0);
+      totalDueEl.innerText = `C$ ${totalDue.toLocaleString()}`;
+
       if (debts.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">No tienes deudas registradas.</p>';
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;">No tienes deudas registradas.</p>';
         return;
       }
 
       container.innerHTML = debts.map((d, index) => `
-        <div class="debt-item">
-          <div>
-            <strong style="color:#ffffff;">${d.desc}</strong><br>
-            <span style="font-size:0.9rem; color:var(--accent-orange); font-weight:700;">C$ ${d.amount.toLocaleString()}</span>
+        <div class="debt-card">
+          <div class="debt-header">
+            <div>
+              <strong style="color:#ffffff; font-size:1.05rem;">${d.desc}</strong>
+              <div style="font-size:1.25rem; color:${d.paid ? 'var(--text-muted)' : 'var(--accent-orange)'}; font-weight:800; margin-top:3px;">
+                C$ ${(d.amount || 0).toLocaleString()}
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="debt-badge ${d.paid ? 'badge-paid' : 'badge-pending'}" onclick="toggleDebt(${index})">
+                ${d.paid ? 'PAGADO' : 'PENDIENTE'}
+              </span>
+              <button class="btn-delete" title="Eliminar" onclick="deleteDebt(${index})">✕</button>
+            </div>
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="debt-badge ${d.paid ? 'badge-paid' : 'badge-pending'}" onclick="toggleDebt(${index})">
-              ${d.paid ? 'PAGADO' : 'PENDIENTE'}
-            </span>
-            <button class="btn-delete" onclick="deleteDebt(${index})">✕</button>
+
+          <div class="debt-actions">
+            <button class="btn-debt-action btn-abono" onclick="payDebt(${index})">💵 Abonar</button>
+            <button class="btn-debt-action btn-aumentar" onclick="increaseDebt(${index})">📈 Aumentar deuda</button>
           </div>
         </div>
       `).join('');
@@ -669,6 +731,55 @@
       document.getElementById('debtDesc').value = '';
       document.getElementById('debtAmount').value = '';
       renderDebts();
+    }
+
+    // Función Abonar
+    function payDebt(index) {
+      const d = debts[index];
+      if (d.paid || d.amount <= 0) {
+        alert('Esta deuda ya se encuentra totalmente saldada.');
+        return;
+      }
+
+      const val = prompt(`¿Cuánto vas a abonar a "${d.desc}"?\nSaldo pendiente actual: C$ ${d.amount.toLocaleString()}`);
+      if (val === null) return;
+      const abono = parseFloat(val) || 0;
+
+      if (abono <= 0) {
+        alert('Ingresa un monto válido mayor a 0');
+        return;
+      }
+
+      if (abono >= d.amount) {
+        d.amount = 0;
+        d.paid = true;
+        alert(`¡Felicidades! Has liquidado por completo la deuda "${d.desc}".`);
+      } else {
+        d.amount -= abono;
+        alert(`Abono registrado. Nuevo saldo restante: C$ ${d.amount.toLocaleString()}`);
+      }
+
+      localStorage.setItem('fidel_debts', JSON.stringify(debts));
+      renderDebts();
+    }
+
+    // Función Aumentar Deuda
+    function increaseDebt(index) {
+      const d = debts[index];
+      const val = prompt(`¿Cuánto deseas agregar a la deuda de "${d.desc}"?\nSaldo actual: C$ ${d.amount.toLocaleString()}`);
+      if (val === null) return;
+      const aumento = parseFloat(val) || 0;
+
+      if (aumento <= 0) {
+        alert('Ingresa un monto válido mayor a 0');
+        return;
+      }
+
+      d.amount += aumento;
+      d.paid = false; // Vuelve a estar pendiente si estaba pagada
+      localStorage.setItem('fidel_debts', JSON.stringify(debts));
+      renderDebts();
+      alert(`Deuda aumentada. Nuevo saldo a pagar: C$ ${d.amount.toLocaleString()}`);
     }
 
     function toggleDebt(index) {
@@ -714,3 +825,4 @@
   </script>
 </body>
 </html>
+
