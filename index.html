@@ -17,6 +17,7 @@
       --bg-color: #070d0a;
       --card-bg: #101914;
       --card-border: rgba(62, 200, 138, 0.12);
+      --card-hover: #15221b;
       --input-bg: #0c1410;
       --accent-green: #3ec88a;
       --accent-green-glow: rgba(62, 200, 138, 0.25);
@@ -39,7 +40,7 @@
     body {
       background-color: var(--bg-color);
       color: var(--text-main);
-      padding: 16px 14px 50px;
+      padding: 16px 14px 40px;
       display: flex;
       justify-content: center;
       min-height: 100vh;
@@ -53,8 +54,11 @@
       gap: 16px;
     }
 
-    /* ENCABEZADO */
-    .header { padding: 8px 4px 4px; }
+    /* ENCABEZADO ELEGANTE */
+    .header {
+      padding: 8px 4px 4px;
+    }
+
     .header h1 {
       font-size: 1.55rem;
       font-weight: 800;
@@ -89,7 +93,7 @@
       border: 1px solid rgba(62, 200, 138, 0.2);
     }
 
-    /* PESTAÑAS */
+    /* PESTAÑAS TIPO PILL */
     .nav-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -119,7 +123,7 @@
       border: 1px solid rgba(62, 200, 138, 0.3);
     }
 
-    /* TARJETAS */
+    /* TARJETAS PREMIUM */
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -141,6 +145,7 @@
       display: block;
     }
 
+    /* INPUTS */
     .large-input {
       width: 100%;
       background-color: var(--input-bg);
@@ -165,7 +170,7 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
 
-    /* PORCENTAJES */
+    /* BOTONES DE PORCENTAJE */
     .percent-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -191,7 +196,7 @@
       box-shadow: 0 4px 15px var(--accent-green-glow);
     }
 
-    /* MINI STATS */
+    /* CONTADORES EN VIVO 2x2 */
     .mini-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -241,6 +246,7 @@
       color-scheme: dark;
     }
 
+    /* BOTONES PRINCIPALES */
     .btn-save {
       background: linear-gradient(135deg, #4ade80 0%, #34b373 100%);
       color: #051c11;
@@ -347,7 +353,7 @@
       text-decoration: underline;
     }
 
-    /* HISTORIAL */
+    /* LISTA DE HISTORIAL */
     .history-item {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
@@ -379,7 +385,7 @@
       transform: scale(0.94);
     }
 
-    /* DEUDAS */
+    /* TARJETAS DE DEUDAS */
     .debt-card {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
@@ -453,11 +459,11 @@
       color: #86efac;
     }
 
-    /* MODALES FLOTANTES INTEGRADOS */
+    /* MODAL FLOTANTE NATIVO (100% LIBRE DE MENSAJES DE GITHUB) */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.78);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       display: flex;
@@ -515,7 +521,7 @@
       box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
     }
 
-    /* NOTIFICACIÓN TOAST */
+    /* NOTIFICACIÓN TOAST SUAVE (ARRIBA) */
     .toast-container {
       position: fixed;
       top: 18px;
@@ -547,50 +553,12 @@
       color: #fca5a5;
     }
 
-    /* BARRA FLOTANTE DE ACTUALIZACIÓN */
-    .update-banner {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 28px);
-      max-width: 400px;
-      background: #14251c;
-      border: 1px solid var(--accent-green);
-      padding: 14px 16px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      z-index: 10001;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-      to { transform: translateX(-50%) translateY(0); opacity: 1; }
-    }
-
-    .btn-update-now {
-      background: var(--accent-green);
-      color: var(--accent-dark);
-      border: none;
-      font-weight: 800;
-      font-size: 0.85rem;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- Alerta Toast -->
+  <!-- Notificación Toast Flotante -->
   <div id="toastBox" class="toast-container">
     <span id="toastIcon">✓</span>
     <span id="toastMsg">Acción realizada</span>
@@ -728,7 +696,7 @@
 
   </div>
 
-  <!-- MODAL: DEUDAS (ABONAR / AUMENTAR) -->
+  <!-- 1. MODAL PARA DEUDAS (ABONAR / AUMENTAR) -->
   <div id="debtModal" class="modal-overlay hidden">
     <div class="modal-content">
       <h3 id="modalTitle" style="color:#ffffff; font-size:1.2rem; font-weight:800;">Abonar</h3>
@@ -746,7 +714,7 @@
     </div>
   </div>
 
-  <!-- MODAL: CONFIRMAR ELIMINACIÓN -->
+  <!-- 2. MODAL NATIVO DE CONFIRMACIÓN DE ELIMINACIÓN -->
   <div id="confirmModal" class="modal-overlay hidden">
     <div class="modal-content">
       <div style="font-size:2rem; text-align:center;">🗑️</div>
@@ -760,7 +728,7 @@
     </div>
   </div>
 
-  <!-- MODAL: CAMBIAR NOMBRE -->
+  <!-- 3. MODAL PARA CAMBIAR NOMBRE -->
   <div id="nameModal" class="modal-overlay hidden">
     <div class="modal-content">
       <h3 style="color:#ffffff; font-size:1.2rem; font-weight:800;">Cambiar Nombre</h3>
@@ -778,56 +746,11 @@
     </div>
   </div>
 
-  <!-- AVISO DE ACTUALIZACIÓN FLOTANTE -->
-  <div id="updateBanner" class="update-banner hidden">
-    <div>
-      <strong style="color:#ffffff; font-size:0.92rem;">🚀 ¡Nueva mejora disponible!</strong>
-      <p style="color:var(--text-muted); font-size:0.78rem; margin-top:2px;">Hay una actualización lista para instalar.</p>
-    </div>
-    <button class="btn-update-now" id="btnUpdateNow">Actualizar</button>
-  </div>
-
   <script>
-    // DETECTOR DE ACTUALIZACIONES AUTOMÁTICAS
-    let newWorkerWaiting = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then(reg => {
-          if (reg.waiting) {
-            promptUserUpdate(reg.waiting);
-            return;
-          }
-          reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                promptUserUpdate(newWorker);
-              }
-            });
-          });
-        }).catch(err => console.log('SW:', err));
-
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (!refreshing) {
-            refreshing = true;
-            window.location.reload();
-          }
-        });
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW:', err));
       });
-    }
-
-    function promptUserUpdate(worker) {
-      newWorkerWaiting = worker;
-      const banner = document.getElementById('updateBanner');
-      if (banner) {
-        banner.classList.remove('hidden');
-        document.getElementById('btnUpdateNow').onclick = () => {
-          if (newWorkerWaiting) {
-            newWorkerWaiting.postMessage({ type: 'SKIP_WAITING' });
-          }
-        };
-      }
     }
 
     let currentPercent = 10;
@@ -843,6 +766,7 @@
     const formattedTodayDate = today.toISOString().split('T')[0];
     document.getElementById('inputDate').value = formattedTodayDate;
 
+    // SISTEMA DE NOTIFICACIONES TOAST (ELEGANTE, SIN ALERTAS DE NAVEGADOR)
     function showToast(msg, isError = false) {
       const toast = document.getElementById('toastBox');
       const icon = document.getElementById('toastIcon');
@@ -864,6 +788,7 @@
       document.getElementById('appTitle').innerHTML = `Finanza y Deudas<br>de ${userName}`;
     }
 
+    /* MODAL DE CAMBIAR NOMBRE */
     function openNameModal() {
       document.getElementById('nameInput').value = userName;
       document.getElementById('nameModal').classList.remove('hidden');
@@ -1001,6 +926,7 @@
       `).join('');
     }
 
+    /* ELIMINAR HISTORIAL CON MODAL PROPIO */
     function askDeleteRecord(index) {
       openConfirmModal(
         '¿Eliminar Registro?',
@@ -1015,6 +941,7 @@
       );
     }
 
+    /* GESTIÓN DE DEUDAS */
     function renderDebts() {
       const container = document.getElementById('debtList');
       const totalDueEl = document.getElementById('totalDebtsDue');
@@ -1069,6 +996,7 @@
       showToast('Deuda agregada');
     }
 
+    /* ELIMINAR DEUDA CON MODAL PROPIO */
     function askDeleteDebt(index) {
       openConfirmModal(
         '¿Eliminar esta deuda?',
@@ -1082,6 +1010,7 @@
       );
     }
 
+    /* MODAL UNIVERSAL DE CONFIRMACIÓN (REEMPLAZA EL CONFIRM DE GITHUB) */
     function openConfirmModal(title, msg, onConfirm) {
       document.getElementById('confirmTitle').innerText = title;
       document.getElementById('confirmSubtitle').innerText = msg;
@@ -1099,6 +1028,7 @@
       pendingConfirmAction = null;
     }
 
+    /* MODAL PARA ABONAR Y AUMENTAR */
     function openDebtModal(index, action) {
       activeDebtIndex = index;
       activeModalAction = action;
