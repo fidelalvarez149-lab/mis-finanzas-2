@@ -771,10 +771,53 @@
   </div>
 
   <script>
+    // DETECTOR AUTOMÁTICO DE ACTUALIZACIONES
+    let newWorkerWaiting = null;
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW:', err));
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          
+          // 1. Si ya había una actualización esperando
+          if (reg.waiting) {
+            promptUserUpdate(reg.waiting);
+            return;
+          }
+
+          // 2. Si detecta una nueva mientras la usas
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                promptUserUpdate(newWorker);
+              }
+            });
+          });
+        });
+
+        // 3. Cuando se confirma la actualización, recarga sola
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
       });
+    }
+
+    function promptUserUpdate(worker) {
+      newWorkerWaiting = worker;
+      const banner = document.getElementById('updateBanner');
+      if (banner) {
+        banner.classList.remove('hidden');
+        document.getElementById('btnUpdateNow').onclick = () => {
+          if (newWorkerWaiting) {
+            newWorkerWaiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+        };
+      }
+    }
     }
 
     let currentPercent = 10;
