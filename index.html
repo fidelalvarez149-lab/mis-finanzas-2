@@ -3,7 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0b1511">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Finanza y Deudas</title>
+  
+  <!-- Enlace al archivo de instalación -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2454/2454269.png">
+
   <style>
     :root {
       --bg-color: #0b1511;
@@ -45,25 +54,19 @@
       gap: 16px;
     }
 
-    /* Encabezado */
-    .header {
-      padding: 8px 4px;
-    }
-
+    .header { padding: 8px 4px; }
     .header h1 {
       font-size: 1.45rem;
       font-weight: 700;
       line-height: 1.25;
       color: #ffffff;
     }
-
     .header .date-display {
       font-size: 0.9rem;
       color: var(--text-muted);
       margin-top: 4px;
       text-transform: capitalize;
     }
-
     .header .change-name {
       font-size: 0.85rem;
       color: var(--text-muted);
@@ -73,7 +76,6 @@
       margin-top: 4px;
     }
 
-    /* Pestañas */
     .nav-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -101,7 +103,6 @@
       border-color: #2f473c;
     }
 
-    /* Tarjetas principales */
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -122,7 +123,6 @@
       display: block;
     }
 
-    /* Inputs */
     .large-input {
       width: 100%;
       background-color: var(--input-bg);
@@ -135,18 +135,10 @@
       outline: none;
     }
 
-    .large-input:focus {
-      border-color: var(--accent-green);
-    }
+    .large-input:focus { border-color: var(--accent-green); }
+    .input-expense { color: var(--accent-red); }
+    .input-expense:focus { border-color: var(--accent-red); }
 
-    .input-expense {
-      color: var(--accent-red);
-    }
-    .input-expense:focus {
-      border-color: var(--accent-red);
-    }
-
-    /* Porcentajes (3 columnas: 0%, 10%, 20%) */
     .percent-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -171,7 +163,6 @@
       border-color: var(--accent-green);
     }
 
-    /* Mini contadores en cuadrícula 2x2 */
     .mini-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -192,7 +183,6 @@
       font-size: 0.68rem;
       font-weight: 700;
       color: var(--text-muted);
-      letter-spacing: 0.04em;
     }
 
     .mini-box .value {
@@ -208,7 +198,6 @@
     .val-gasto { color: var(--accent-red); }
     .val-queda { color: var(--accent-green); }
 
-    /* Fecha picker */
     .date-input {
       width: 100%;
       background-color: var(--input-bg);
@@ -222,7 +211,6 @@
       color-scheme: dark;
     }
 
-    /* Botón Guardar */
     .btn-save {
       background-color: var(--accent-green);
       color: var(--accent-dark);
@@ -233,14 +221,10 @@
       font-weight: 700;
       border-radius: 12px;
       cursor: pointer;
-      transition: background-color 0.2s;
     }
 
-    .btn-save:active {
-      background-color: var(--accent-green-hover);
-    }
+    .btn-save:active { background-color: var(--accent-green-hover); }
 
-    /* Resumen del mes */
     .month-header {
       font-size: 1.05rem;
       font-weight: 700;
@@ -260,14 +244,12 @@
     .banner-ganado .label {
       font-size: 0.72rem;
       font-weight: 800;
-      letter-spacing: 0.05em;
       opacity: 0.85;
     }
 
     .banner-ganado .amount {
       font-size: 2.1rem;
       font-weight: 800;
-      letter-spacing: -0.02em;
     }
 
     .grid-stats {
@@ -290,7 +272,6 @@
       font-size: 0.67rem;
       font-weight: 700;
       color: var(--text-muted);
-      letter-spacing: 0.05em;
     }
 
     .stat-card .val {
@@ -308,10 +289,7 @@
       color: var(--text-muted);
       margin-top: 2px;
     }
-
-    .total-fondo-text strong {
-      color: #ffffff;
-    }
+    .total-fondo-text strong { color: #ffffff; }
 
     .btn-backup {
       text-align: center;
@@ -324,7 +302,6 @@
       margin-top: 2px;
     }
 
-    /* Pestaña Historial y Deudas */
     .history-item, .debt-item {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
@@ -362,24 +339,21 @@
 
   <div class="app-container">
 
-    <!-- Encabezado -->
     <header class="header">
       <h1 id="appTitle">Finanza y Deudas<br>de Fidel Alvarez</h1>
       <div class="date-display" id="todayHeaderDate"></div>
       <span class="change-name" onclick="changeName()">Cambiar nombre</span>
     </header>
 
-    <!-- Pestañas de navegación -->
     <nav class="nav-tabs">
       <button class="tab-btn active" id="tabHoyBtn" onclick="switchTab('hoy')">Hoy</button>
       <button class="tab-btn" id="tabHistBtn" onclick="switchTab('historial')">Historial</button>
       <button class="tab-btn" id="tabDeudBtn" onclick="switchTab('deudas')">Deudas</button>
     </nav>
 
-    <!-- VISTA: HOY -->
+    <!-- VISTA HOY -->
     <div id="viewHoy" style="display: flex; flex-direction: column; gap: 16px;">
       
-      <!-- Tarjeta Registro Diario -->
       <section class="card">
         <div>
           <label class="field-label">¿CUÁNTO GANÉ HOY? (C$)</label>
@@ -400,7 +374,6 @@
           </div>
         </div>
 
-        <!-- 4 mini cajas ordenadas: Gané, Aparto, Gastos y Me Queda -->
         <div class="mini-stats">
           <div class="mini-box">
             <span class="label">GANÉ</span>
@@ -428,7 +401,6 @@
         <button class="btn-save" onclick="saveDay()">Guardar el día</button>
       </section>
 
-      <!-- Tarjeta Resumen Mensual -->
       <section class="card">
         <h2 class="month-header" id="summaryMonthLabel">noviembre de 2026</h2>
 
@@ -469,7 +441,7 @@
 
     </div>
 
-    <!-- VISTA: HISTORIAL -->
+    <!-- VISTA HISTORIAL -->
     <div id="viewHistorial" class="card hidden">
       <h2 class="month-header">Historial de Registros</h2>
       <div id="historyList">
@@ -477,30 +449,34 @@
       </div>
     </div>
 
-    <!-- VISTA: DEUDAS -->
+    <!-- VISTA DEUDAS -->
     <div id="viewDeudas" class="card hidden">
       <h2 class="month-header">Control de Deudas</h2>
-      
       <div style="display:flex; flex-direction:column; gap:8px;">
         <input type="text" id="debtDesc" placeholder="¿A quién le debes o concepto?" class="large-input" style="font-size:1rem; padding:10px;">
         <input type="number" id="debtAmount" placeholder="Monto (C$)" class="large-input" style="font-size:1rem; padding:10px;">
         <button class="btn-save" style="padding:10px; font-size:0.95rem;" onclick="addDebt()">+ Agregar Deuda</button>
       </div>
-
-      <div id="debtList" style="margin-top:10px;">
-        <!-- Lista de deudas -->
-      </div>
+      <div id="debtList" style="margin-top:10px;"></div>
     </div>
 
   </div>
 
   <script>
+    // Registro del Service Worker para habilitar la instalación oficial en Android
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('App lista para instalar', reg))
+          .catch(err => console.log('Error instalador:', err));
+      });
+    }
+
     let currentPercent = 10;
     let records = JSON.parse(localStorage.getItem('fidel_records') || '[]');
     let debts = JSON.parse(localStorage.getItem('fidel_debts') || '[]');
     let userName = localStorage.getItem('fidel_name') || 'Fidel Alvarez';
 
-    // Fecha actual
     const today = new Date();
     const formattedTodayDate = today.toISOString().split('T')[0];
     document.getElementById('inputDate').value = formattedTodayDate;
@@ -528,11 +504,9 @@
       calculateDaily();
     }
 
-    // Calcula automáticamente Gané, Apartado, Gastos y Me Queda
     function calculateDaily() {
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
       const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
-      
       const aparto = Math.round(gane * (currentPercent / 100));
       const queda = gane - aparto - gasto;
 
@@ -575,7 +549,6 @@
       records.sort((a, b) => new Date(b.date) - new Date(a.date));
       localStorage.setItem('fidel_records', JSON.stringify(records));
 
-      // Limpiar campos
       document.getElementById('inputIncome').value = 0;
       document.getElementById('inputExpense').value = 0;
       calculateDaily();
@@ -716,11 +689,7 @@
     }
 
     function exportData() {
-      const data = {
-        name: userName,
-        records: records,
-        debts: debts
-      };
+      const data = { name: userName, records: records, debts: debts };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
