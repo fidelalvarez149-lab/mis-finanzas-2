@@ -321,7 +321,7 @@
       padding: 4px;
     }
 
-    /* ESTILOS DE LA SECCIÓN DEUDAS */
+    /* SECCIÓN DEUDAS */
     .debt-card {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
@@ -348,7 +348,7 @@
 
     .btn-debt-action {
       border: 1px solid transparent;
-      padding: 8px 10px;
+      padding: 9px 10px;
       border-radius: 8px;
       font-size: 0.85rem;
       font-weight: 700;
@@ -379,6 +379,43 @@
     }
     .badge-pending { background: #5a2626; color: #ff9d9d; }
     .badge-paid { background: #16432f; color: #8cf0be; }
+
+    /* MODAL FLOTANTE (REEMPLAZA EL MENSAJE DE GITHUB) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 9999;
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-cancel {
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
 
     .hidden { display: none !important; }
   </style>
@@ -501,7 +538,6 @@
     <div id="viewDeudas" class="card hidden">
       <h2 class="month-header">Control de Deudas</h2>
       
-      <!-- Total Deudas Pendientes -->
       <div class="stat-card" style="border-color: rgba(239, 83, 80, 0.3);">
         <span class="label" style="color: var(--accent-red);">TOTAL PENDIENTE POR PAGAR</span>
         <span class="val val-red" id="totalDebtsDue">C$ 0</span>
@@ -518,6 +554,24 @@
 
   </div>
 
+  <!-- MODAL INTEGRADO PARA DEUDAS (SIN MENSAJES DE GITHUB) -->
+  <div id="debtModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 id="modalTitle" style="color:#ffffff; font-size:1.15rem;">Registrar Abono</h3>
+      <p id="modalSubtitle" style="color:var(--text-muted); font-size:0.85rem; line-height:1.4;"></p>
+      
+      <div>
+        <label class="field-label">MONTO (C$)</label>
+        <input type="number" id="modalInputAmount" class="large-input" placeholder="0" min="1">
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:6px;">
+        <button class="btn-cancel" onclick="closeDebtModal()">Cancelar</button>
+        <button class="btn-save" id="modalConfirmBtn" style="padding:12px; font-size:0.95rem;" onclick="submitDebtModal()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -529,6 +583,10 @@
     let records = JSON.parse(localStorage.getItem('fidel_records') || '[]');
     let debts = JSON.parse(localStorage.getItem('fidel_debts') || '[]');
     let userName = localStorage.getItem('fidel_name') || 'Fidel Alvarez';
+
+    // Variables de control del modal
+    let activeDebtIndex = null;
+    let activeModalAction = null; // 'abono' o 'aumento'
 
     const today = new Date();
     const formattedTodayDate = today.toISOString().split('T')[0];
@@ -561,7 +619,6 @@
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
       const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
 
-      // El apartado es exclusivo del ingreso (intocable)
       const aparto = Math.round(gane * (currentPercent / 100));
       const disponible = gane - aparto;
       const queda = disponible - gasto;
@@ -580,14 +637,8 @@
       const incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
       const expenseVal = parseFloat(document.getElementById('inputExpense').value) || 0;
 
-      if (!dateVal) {
-        alert('Por favor selecciona una fecha');
-        return;
-      }
-      if (incomeVal <= 0 && expenseVal <= 0) {
-        alert('Ingresa una ganancia o un gasto válido.');
-        return;
-      }
+      if (!dateVal) return;
+      if (incomeVal <= 0 && expenseVal <= 0) return;
 
       const aparto = Math.round(incomeVal * (currentPercent / 100));
       const queda = (incomeVal - aparto) - expenseVal;
@@ -610,7 +661,6 @@
       calculateDaily();
       updateMonthSummary();
       renderHistory();
-      alert('¡Día guardado exitosamente!');
     }
 
     function updateMonthSummary() {
@@ -678,12 +728,11 @@
       }
     }
 
-    // GESTIÓN DE DEUDAS (ABONAR Y AUMENTAR)
+    // CONTROL DE DEUDAS
     function renderDebts() {
       const container = document.getElementById('debtList');
       const totalDueEl = document.getElementById('totalDebtsDue');
 
-      // Calcular total pendiente
       const totalDue = debts.filter(d => !d.paid).reduce((acc, d) => acc + (d.amount || 0), 0);
       totalDueEl.innerText = `C$ ${totalDue.toLocaleString()}`;
 
@@ -710,8 +759,8 @@
           </div>
 
           <div class="debt-actions">
-            <button class="btn-debt-action btn-abono" onclick="payDebt(${index})">💵 Abonar</button>
-            <button class="btn-debt-action btn-aumentar" onclick="increaseDebt(${index})">📈 Aumentar deuda</button>
+            <button class="btn-debt-action btn-abono" onclick="openDebtModal(${index}, 'abono')">💵 Abonar</button>
+            <button class="btn-debt-action btn-aumentar" onclick="openDebtModal(${index}, 'aumento')">📈 Aumentar deuda</button>
           </div>
         </div>
       `).join('');
@@ -721,10 +770,7 @@
       const desc = document.getElementById('debtDesc').value.trim();
       const amount = parseFloat(document.getElementById('debtAmount').value) || 0;
 
-      if (!desc || amount <= 0) {
-        alert('Ingresa una descripción y monto válido');
-        return;
-      }
+      if (!desc || amount <= 0) return;
 
       debts.push({ desc, amount, paid: false });
       localStorage.setItem('fidel_debts', JSON.stringify(debts));
@@ -733,53 +779,60 @@
       renderDebts();
     }
 
-    // Función Abonar
-    function payDebt(index) {
+    // ABRIR VENTANA INTEGRADA (SIN GITHUB)
+    function openDebtModal(index, action) {
+      activeDebtIndex = index;
+      activeModalAction = action;
       const d = debts[index];
-      if (d.paid || d.amount <= 0) {
-        alert('Esta deuda ya se encuentra totalmente saldada.');
-        return;
-      }
 
-      const val = prompt(`¿Cuánto vas a abonar a "${d.desc}"?\nSaldo pendiente actual: C$ ${d.amount.toLocaleString()}`);
-      if (val === null) return;
-      const abono = parseFloat(val) || 0;
+      const modal = document.getElementById('debtModal');
+      const title = document.getElementById('modalTitle');
+      const subtitle = document.getElementById('modalSubtitle');
+      const input = document.getElementById('modalInputAmount');
 
-      if (abono <= 0) {
-        alert('Ingresa un monto válido mayor a 0');
-        return;
-      }
+      input.value = '';
 
-      if (abono >= d.amount) {
-        d.amount = 0;
-        d.paid = true;
-        alert(`¡Felicidades! Has liquidado por completo la deuda "${d.desc}".`);
+      if (action === 'abono') {
+        title.innerText = '💵 Registrar Abono';
+        subtitle.innerHTML = `Deuda: <strong style="color:#fff;">${d.desc}</strong><br>Saldo pendiente: <strong style="color:var(--accent-orange);">C$ ${d.amount.toLocaleString()}</strong>`;
       } else {
-        d.amount -= abono;
-        alert(`Abono registrado. Nuevo saldo restante: C$ ${d.amount.toLocaleString()}`);
+        title.innerText = '📈 Aumentar Deuda';
+        subtitle.innerHTML = `Deuda: <strong style="color:#fff;">${d.desc}</strong><br>Saldo actual: <strong style="color:var(--accent-orange);">C$ ${d.amount.toLocaleString()}</strong>`;
       }
 
-      localStorage.setItem('fidel_debts', JSON.stringify(debts));
-      renderDebts();
+      modal.classList.remove('hidden');
+      setTimeout(() => input.focus(), 100);
     }
 
-    // Función Aumentar Deuda
-    function increaseDebt(index) {
-      const d = debts[index];
-      const val = prompt(`¿Cuánto deseas agregar a la deuda de "${d.desc}"?\nSaldo actual: C$ ${d.amount.toLocaleString()}`);
-      if (val === null) return;
-      const aumento = parseFloat(val) || 0;
+    function closeDebtModal() {
+      document.getElementById('debtModal').classList.add('hidden');
+      activeDebtIndex = null;
+      activeModalAction = null;
+    }
 
-      if (aumento <= 0) {
-        alert('Ingresa un monto válido mayor a 0');
-        return;
+    // CONFIRMAR ACCIÓN DESDE LA VENTANA INTEGRADA
+    function submitDebtModal() {
+      if (activeDebtIndex === null) return;
+      const d = debts[activeDebtIndex];
+      const val = parseFloat(document.getElementById('modalInputAmount').value) || 0;
+
+      if (val <= 0) return;
+
+      if (activeModalAction === 'abono') {
+        if (val >= d.amount) {
+          d.amount = 0;
+          d.paid = true;
+        } else {
+          d.amount -= val;
+        }
+      } else if (activeModalAction === 'aumento') {
+        d.amount += val;
+        d.paid = false;
       }
 
-      d.amount += aumento;
-      d.paid = false; // Vuelve a estar pendiente si estaba pagada
       localStorage.setItem('fidel_debts', JSON.stringify(debts));
+      closeDebtModal();
       renderDebts();
-      alert(`Deuda aumentada. Nuevo saldo a pagar: C$ ${d.amount.toLocaleString()}`);
     }
 
     function toggleDebt(index) {
