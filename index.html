@@ -9,7 +9,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Finanza y Deudas</title>
   
-  <!-- Enlace al archivo de instalación -->
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2454/2454269.png">
 
@@ -366,7 +365,7 @@
         </div>
 
         <div>
-          <label class="field-label">APARTAR PARA EL FONDO</label>
+          <label class="field-label">APARTAR PARA EL FONDO (INTOCABLE)</label>
           <div class="percent-row">
             <button class="percent-btn" id="btn0" onclick="setPercent(0)">0%</button>
             <button class="percent-btn active" id="btn10" onclick="setPercent(10)">10%</button>
@@ -374,13 +373,14 @@
           </div>
         </div>
 
+        <!-- Mini resumen -->
         <div class="mini-stats">
           <div class="mini-box">
             <span class="label">GANÉ</span>
             <span class="value val-gane" id="boxGane">C$ 0</span>
           </div>
           <div class="mini-box">
-            <span class="label">APARTO</span>
+            <span class="label">APARTO (INTACTO)</span>
             <span class="value val-aparto" id="boxAparto">C$ 0</span>
           </div>
           <div class="mini-box">
@@ -401,6 +401,7 @@
         <button class="btn-save" onclick="saveDay()">Guardar el día</button>
       </section>
 
+      <!-- Resumen del Mes -->
       <section class="card">
         <h2 class="month-header" id="summaryMonthLabel">noviembre de 2026</h2>
 
@@ -411,7 +412,7 @@
 
         <div class="grid-stats">
           <div class="stat-card">
-            <span class="label">APARTADO</span>
+            <span class="label">FONDO APARTADO (INTACTO)</span>
             <span class="val val-orange" id="sumApartado">C$ 0</span>
           </div>
           <div class="stat-card">
@@ -463,12 +464,10 @@
   </div>
 
   <script>
-    // Registro del Service Worker para habilitar la instalación oficial en Android
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('App lista para instalar', reg))
-          .catch(err => console.log('Error instalador:', err));
+          .catch(err => console.log('SW:', err));
       });
     }
 
@@ -504,11 +503,19 @@
       calculateDaily();
     }
 
+    // LÓGICA DE BLINDAJE: El Aparto no se toca, el gasto solo reduce lo que queda
     function calculateDaily() {
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
       const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
+
+      // 1. Apartado calculado únicamente sobre lo ganado (100% blindado)
       const aparto = Math.round(gane * (currentPercent / 100));
-      const queda = gane - aparto - gasto;
+
+      // 2. Dinero disponible antes de gastos
+      const disponible = gane - aparto;
+
+      // 3. El gasto se descuenta ÚNICAMENTE de lo disponible
+      const queda = disponible - gasto;
 
       document.getElementById('boxGane').innerText = `C$ ${gane.toLocaleString()}`;
       document.getElementById('boxAparto').innerText = `C$ ${aparto.toLocaleString()}`;
@@ -534,7 +541,7 @@
       }
 
       const aparto = Math.round(incomeVal * (currentPercent / 100));
-      const queda = incomeVal - aparto - expenseVal;
+      const queda = (incomeVal - aparto) - expenseVal;
 
       records = records.filter(r => r.date !== dateVal);
       records.push({
@@ -570,10 +577,13 @@
         return d.getFullYear() === year && d.getMonth() === month;
       });
 
+      // El apartado del mes y el acumulado son estrictamente la suma de ahorros (nunca se restan gastos aquí)
       const ganadoMes = monthRecords.reduce((acc, r) => acc + (r.gane || 0), 0);
       const apartadoMes = monthRecords.reduce((acc, r) => acc + (r.aparto || 0), 0);
       const gastosMes = monthRecords.reduce((acc, r) => acc + (r.gastos || 0), 0);
-      const quedoMes = ganadoMes - apartadoMes - gastosMes;
+      
+      // Lo que te quedó es Ganado - Apartado - Gastos
+      const quedoMes = (ganadoMes - apartadoMes) - gastosMes;
 
       const diasTrabajados = monthRecords.filter(r => (r.gane || 0) > 0).length;
       const promedio = diasTrabajados > 0 ? Math.round(ganadoMes / diasTrabajados) : 0;
@@ -604,7 +614,7 @@
           <div>
             <strong style="color:#ffffff;">${r.date}</strong><br>
             <span style="font-size:0.83rem; color:var(--text-muted);">
-              Ganó: C$ ${(r.gane || 0).toLocaleString()} | Fondo (${r.percent}%): <span style="color:var(--accent-orange);">C$ ${(r.aparto || 0).toLocaleString()}</span><br>
+              Ganó: C$ ${(r.gane || 0).toLocaleString()} | Apartado (${r.percent}%): <span style="color:var(--accent-orange);">C$ ${(r.aparto || 0).toLocaleString()}</span><br>
               Gastó: <span style="color:var(--accent-red);">C$ ${(r.gastos || 0).toLocaleString()}</span> | Quedó: <span style="color:${(r.queda || 0) < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">C$ ${(r.queda || 0).toLocaleString()}</span>
             </span>
           </div>
