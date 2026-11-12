@@ -1,4 +1,6 @@
-const CACHE_NAME = 'finanzas-v3';
+// Cada vez que hagas una mejora en la app, cámbiale el número aquí (ej: v4, v5, etc.)
+const CACHE_NAME = 'finanzas-v4';
+
 const urlsToCache = [
   './',
   './index.html',
@@ -10,7 +12,6 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -26,6 +27,13 @@ self.addEventListener('activate', event => {
     })
   );
   self.clients.claim();
+});
+
+// Escucha la orden de actualizar desde la pantalla
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('fetch', event => {
