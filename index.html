@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Finanza y Deudas</title>
+  <style>
+    :root {
+      --bg-color: #0b1511;
+      --card-bg: #14201a;
+      --card-border: #1e3027;
+      --input-bg: #121c17;
+      --accent-green: #3ec88a;
+      --accent-green-hover: #36b57c;
+      --accent-dark: #082116;
+      --accent-orange: #e5a13c;
+      --text-main: #f3f4f6;
+      --text-muted: #83978c;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Encabezado */
+    .header {
+      padding: 8px 4px;
+    }
+
+    .header h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: #ffffff;
+    }
+
+    .header .date-display {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: capitalize;
+    }
+
+    .header .change-name {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: underline;
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    /* Pestañas */
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      background-color: rgba(20, 32, 26, 0.6);
+      padding: 4px;
+      border-radius: 12px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 10px 0;
+      border-radius: 9px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background-color: #21342b;
+      color: #ffffff;
+      border-color: #2f473c;
+    }
+
+    /* Tarjetas principales */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .field-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* Inputs */
+    .large-input {
+      width: 100%;
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #ffffff;
+      outline: none;
+    }
+
+    .large-input:focus {
+      border-color: var(--accent-green);
+    }
+
+    /* Porcentajes */
+    .percent-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .percent-btn {
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      color: #ffffff;
+      font-size: 1.15rem;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .percent-btn.active {
+      background-color: var(--accent-green);
+      color: var(--accent-dark);
+      border-color: var(--accent-green);
+    }
+
+    /* Mini contadores 3 columnas */
+    .mini-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mini-box {
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      padding: 10px 8px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mini-box .label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .mini-box .value {
+      font-size: 1rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .val-gane { color: #ffffff; }
+    .val-aparto { color: var(--accent-orange); }
+    .val-queda { color: var(--accent-green); }
+
+    /* Fecha picker */
+    .date-input {
+      width: 100%;
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      color-scheme: dark;
+    }
+
+    /* Botón Guardar */
+    .btn-save {
+      background-color: var(--accent-green);
+      color: var(--accent-dark);
+      border: none;
+      width: 100%;
+      padding: 15px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-save:active {
+      background-color: var(--accent-green-hover);
+    }
+
+    /* Resumen del mes */
+    .month-header {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .banner-ganado {
+      background-color: var(--accent-green);
+      color: var(--accent-dark);
+      padding: 18px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .banner-ganado .label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      opacity: 0.85;
+    }
+
+    .banner-ganado .amount {
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .grid-2x2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat-card {
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      padding: 12px 14px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-card .label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card .val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .stat-card .val-orange {
+      color: var(--accent-orange);
+    }
+
+    .total-fondo-text {
+      text-align: left;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .total-fondo-text strong {
+      color: #ffffff;
+    }
+
+    .btn-backup {
+      text-align: center;
+      color: var(--text-muted);
+      text-decoration: underline;
+      font-size: 0.88rem;
+      cursor: pointer;
+      border: none;
+      background: none;
+      margin-top: 2px;
+    }
+
+    /* Pestaña Historial y Deudas */
+    .history-item, .debt-item {
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      color: var(--danger);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .debt-badge {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .badge-pending { background: #5a2626; color: #ff9d9d; }
+    .badge-paid { background: #16432f; color: #8cf0be; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Encabezado -->
+    <header class="header">
+      <h1 id="appTitle">Finanza y Deudas<br>de Fidel Alvarez</h1>
+      <div class="date-display" id="todayHeaderDate"></div>
+      <span class="change-name" onclick="changeName()">Cambiar nombre</span>
+    </header>
+
+    <!-- Pestañas de navegación -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" id="tabHoyBtn" onclick="switchTab('hoy')">Hoy</button>
+      <button class="tab-btn" id="tabHistBtn" onclick="switchTab('historial')">Historial</button>
+      <button class="tab-btn" id="tabDeudBtn" onclick="switchTab('deudas')">Deudas</button>
+    </nav>
+
+    <!-- VISTA: HOY -->
+    <div id="viewHoy" style="display: flex; flex-direction: column; gap: 16px;">
+      
+      <!-- Tarjeta Registro Diario -->
+      <section class="card">
+        <div>
+          <label class="field-label">¿CUÁNTO GANÉ HOY? (C$)</label>
+          <input type="number" id="inputIncome" class="large-input" value="0" min="0" oninput="calculateDaily()">
+        </div>
+
+        <div>
+          <label class="field-label" style="display:block; margin-bottom:8px;">APARTAR PARA EL FONDO</label>
+          <div class="percent-row">
+            <button class="percent-btn active" id="btn10" onclick="setPercent(10)">10%</button>
+            <button class="percent-btn" id="btn20" onclick="setPercent(20)">20%</button>
+          </div>
+        </div>
+
+        <div class="mini-stats">
+          <div class="mini-box">
+            <span class="label">GANÉ</span>
+            <span class="value val-gane" id="boxGane">C$ 0</span>
+          </div>
+          <div class="mini-box">
+            <span class="label">APARTO</span>
+            <span class="value val-aparto" id="boxAparto">C$ 0</span>
+          </div>
+          <div class="mini-box">
+            <span class="label">ME QUEDA</span>
+            <span class="value val-queda" id="boxQueda">C$ 0</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label" style="display:block; margin-bottom:6px;">FECHA</label>
+          <input type="date" id="inputDate" class="date-input" onchange="updateMonthSummary()">
+        </div>
+
+        <button class="btn-save" onclick="saveDay()">Guardar el día</button>
+      </section>
+
+      <!-- Tarjeta Resumen Mensual -->
+      <section class="card">
+        <h2 class="month-header" id="summaryMonthLabel">noviembre de 2026</h2>
+
+        <div class="banner-ganado">
+          <span class="label">GANADO EN EL MES</span>
+          <span class="amount" id="sumGanado">C$ 0</span>
+        </div>
+
+        <div class="grid-2x2">
+          <div class="stat-card">
+            <span class="label">APARTADO</span>
+            <span class="val val-orange" id="sumApartado">C$ 0</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">TE QUEDÓ</span>
+            <span class="val" id="sumQuedo">C$ 0</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">DÍAS TRABAJADOS</span>
+            <span class="val" id="sumDias">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">PROMEDIO POR DÍA</span>
+            <span class="val" id="sumPromedio">C$ 0</span>
+          </div>
+        </div>
+
+        <div class="total-fondo-text">
+          Fondo apartado en total: <strong id="sumFondoTotal">C$ 0</strong>
+        </div>
+
+        <button class="btn-backup" onclick="exportData()">Respaldo de datos</button>
+      </section>
+
+    </div>
+
+    <!-- VISTA: HISTORIAL -->
+    <div id="viewHistorial" class="card hidden">
+      <h2 class="month-header">Historial de Registros</h2>
+      <div id="historyList">
+        <p style="color:var(--text-muted); font-size:0.9rem;">No hay registros aún.</p>
+      </div>
+    </div>
+
+    <!-- VISTA: DEUDAS -->
+    <div id="viewDeudas" class="card hidden">
+      <h2 class="month-header">Control de Deudas</h2>
+      
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <input type="text" id="debtDesc" placeholder="¿A quién le debes o concepto?" class="large-input" style="font-size:1rem; padding:10px;">
+        <input type="number" id="debtAmount" placeholder="Monto (C$)" class="large-input" style="font-size:1rem; padding:10px;">
+        <button class="btn-save" style="padding:10px; font-size:0.95rem;" onclick="addDebt()">+ Agregar Deuda</button>
+      </div>
+
+      <div id="debtList" style="margin-top:10px;">
+        <!-- Elementos de deuda -->
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Inicialización del Estado
+    let currentPercent = 10;
+    let records = JSON.parse(localStorage.getItem('fidel_records') || '[]');
+    let debts = JSON.parse(localStorage.getItem('fidel_debts') || '[]');
+    let userName = localStorage.getItem('fidel_name') || 'Fidel Alvarez';
+
+    // Establecer fecha por defecto (hoy)
+    const today = new Date();
+    const formattedTodayDate = today.toISOString().split('T')[0];
+    document.getElementById('inputDate').value = formattedTodayDate;
+
+    // Configurar fechas y textos
+    function setupHeaderDate() {
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('todayHeaderDate').innerText = today.toLocaleDateString('es-NI', options);
+      document.getElementById('appTitle').innerHTML = `Finanza y Deudas<br>de ${userName}`;
+    }
+
+    function changeName() {
+      const newName = prompt('Ingresa tu nombre y apellido:', userName);
+      if (newName && newName.trim() !== '') {
+        userName = newName.trim();
+        localStorage.setItem('fidel_name', userName);
+        setupHeaderDate();
+      }
+    }
+
+    function setPercent(val) {
+      currentPercent = val;
+      document.getElementById('btn10').classList.toggle('active', val === 10);
+      document.getElementById('btn20').classList.toggle('active', val === 20);
+      calculateDaily();
+    }
+
+    function calculateDaily() {
+      const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
+      const aparto = Math.round(gane * (currentPercent / 100));
+      const queda = gane - aparto;
+
+      document.getElementById('boxGane').innerText = `C$ ${gane.toLocaleString()}`;
+      document.getElementById('boxAparto').innerText = `C$ ${aparto.toLocaleString()}`;
+      document.getElementById('boxQueda').innerText = `C$ ${queda.toLocaleString()}`;
+    }
+
+    function saveDay() {
+      const dateVal = document.getElementById('inputDate').value;
+      const incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
+
+      if (!dateVal) {
+        alert('Por favor selecciona una fecha');
+        return;
+      }
+      if (incomeVal <= 0) {
+        alert('Ingresa un monto ganado mayor a 0');
+        return;
+      }
+
+      const aparto = Math.round(incomeVal * (currentPercent / 100));
+      const queda = incomeVal - aparto;
+
+      // Si ya existe registro de ese día, se actualiza o se agrega uno nuevo
+      records = records.filter(r => r.date !== dateVal);
+      records.push({
+        date: dateVal,
+        gane: incomeVal,
+        aparto: aparto,
+        queda: queda,
+        percent: currentPercent
+      });
+
+      // Ordenar por fecha descendente
+      records.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      localStorage.setItem('fidel_records', JSON.stringify(records));
+      
+      // Limpiar input y recalcular
+      document.getElementById('inputIncome').value = 0;
+      calculateDaily();
+      updateMonthSummary();
+      renderHistory();
+      alert('¡Día guardado exitosamente!');
+    }
+
+    function updateMonthSummary() {
+      const selectedDate = new Date(document.getElementById('inputDate').value || formattedTodayDate);
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth();
+
+      // Formato para el título del mes (ej. noviembre de 2026)
+      const monthNames = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+      document.getElementById('summaryMonthLabel').innerText = `${monthNames[month]} de ${year}`;
+
+      // Filtrar registros del mes seleccionado
+      const monthRecords = records.filter(r => {
+        const d = new Date(r.date + 'T00:00:00');
+        return d.getFullYear() === year && d.getMonth() === month;
+      });
+
+      const ganadoMes = monthRecords.reduce((acc, r) => acc + r.gane, 0);
+      const apartadoMes = monthRecords.reduce((acc, r) => acc + r.aparto, 0);
+      const quedoMes = monthRecords.reduce((acc, r) => acc + r.queda, 0);
+      const diasTrabajados = monthRecords.length;
+      const promedio = diasTrabajados > 0 ? Math.round(ganadoMes / diasTrabajados) : 0;
+
+      // Fondo histórico de todos los tiempos
+      const fondoHistorico = records.reduce((acc, r) => acc + r.aparto, 0);
+
+      document.getElementById('sumGanado').innerText = `C$ ${ganadoMes.toLocaleString()}`;
+      document.getElementById('sumApartado').innerText = `C$ ${apartadoMes.toLocaleString()}`;
+      document.getElementById('sumQuedo').innerText = `C$ ${quedoMes.toLocaleString()}`;
+      document.getElementById('sumDias').innerText = diasTrabajados;
+      document.getElementById('sumPromedio').innerText = `C$ ${promedio.toLocaleString()}`;
+      document.getElementById('sumFondoTotal').innerText = `C$ ${fondoHistorico.toLocaleString()}`;
+    }
+
+    // Historial
+    function renderHistory() {
+      const container = document.getElementById('historyList');
+      if (records.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">No hay registros aún.</p>';
+        return;
+      }
+
+      container.innerHTML = records.map((r, index) => `
+        <div class="history-item">
+          <div>
+            <strong style="color:#ffffff;">${r.date}</strong><br>
+            <span style="font-size:0.85rem; color:var(--text-muted);">
+              Ganó: C$ ${r.gane.toLocaleString()} | Ahorro (${r.percent}%): <span style="color:var(--accent-orange);">C$ ${r.aparto.toLocaleString()}</span>
+            </span>
+          </div>
+          <button class="btn-delete" title="Eliminar" onclick="deleteRecord(${index})">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function deleteRecord(index) {
+      if (confirm('¿Deseas eliminar este registro?')) {
+        records.splice(index, 1);
+        localStorage.setItem('fidel_records', JSON.stringify(records));
+        updateMonthSummary();
+        renderHistory();
+      }
+    }
+
+    // Deudas
+    function renderDebts() {
+      const container = document.getElementById('debtList');
+      if (debts.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">No tienes deudas registradas.</p>';
+        return;
+      }
+
+      container.innerHTML = debts.map((d, index) => `
+        <div class="debt-item">
+          <div>
+            <strong style="color:#ffffff;">${d.desc}</strong><br>
+            <span style="font-size:0.9rem; color:var(--accent-orange); font-weight:700;">C$ ${d.amount.toLocaleString()}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="debt-badge ${d.paid ? 'badge-paid' : 'badge-pending'}" onclick="toggleDebt(${index})">
+              ${d.paid ? 'PAGADO' : 'PENDIENTE'}
+            </span>
+            <button class="btn-delete" onclick="deleteDebt(${index})">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addDebt() {
+      const desc = document.getElementById('debtDesc').value.trim();
+      const amount = parseFloat(document.getElementById('debtAmount').value) || 0;
+
+      if (!desc || amount <= 0) {
+        alert('Ingresa una descripción y monto válido');
+        return;
+      }
+
+      debts.push({ desc, amount, paid: false });
+      localStorage.setItem('fidel_debts', JSON.stringify(debts));
+      document.getElementById('debtDesc').value = '';
+      document.getElementById('debtAmount').value = '';
+      renderDebts();
+    }
+
+    function toggleDebt(index) {
+      debts[index].paid = !debts[index].paid;
+      localStorage.setItem('fidel_debts', JSON.stringify(debts));
+      renderDebts();
+    }
+
+    function deleteDebt(index) {
+      if (confirm('¿Eliminar esta deuda?')) {
+        debts.splice(index, 1);
+        localStorage.setItem('fidel_debts', JSON.stringify(debts));
+        renderDebts();
+      }
+    }
+
+    // Control de pestañas
+    function switchTab(tab) {
+      document.getElementById('tabHoyBtn').classList.toggle('active', tab === 'hoy');
+      document.getElementById('tabHistBtn').classList.toggle('active', tab === 'historial');
+      document.getElementById('tabDeudBtn').classList.toggle('active', tab === 'deudas');
+
+      document.getElementById('viewHoy').classList.toggle('hidden', tab !== 'hoy');
+      document.getElementById('viewHistorial').classList.toggle('hidden', tab !== 'historial');
+      document.getElementById('viewDeudas').classList.toggle('hidden', tab !== 'deudas');
+
+      if (tab === 'historial') renderHistory();
+      if (tab === 'deudas') renderDebts();
+    }
+
+    // Respaldo de datos
+    function exportData() {
+      const data = {
+        name: userName,
+        records: records,
+        debts: debts
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `respaldo_finanzas_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+    }
+
+    // Carga inicial
+    setupHeaderDate();
+    calculateDaily();
+    updateMonthSummary();
+  </script>
+</body>
+</html>
