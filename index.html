@@ -166,7 +166,7 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
 
-    /* CHIPS DE CATEGORÍAS DE GASTOS */
+    /* CHIPS DINÁMICOS DE CATEGORÍAS */
     .chips-row {
       display: flex;
       gap: 6px;
@@ -184,14 +184,62 @@
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       user-select: none;
     }
 
-    .chip:active, .chip.active {
+    .chip:active {
       background: rgba(248, 113, 113, 0.18);
       border-color: var(--accent-red);
       color: var(--accent-red);
       transform: scale(0.96);
+    }
+
+    .chip-add {
+      background: rgba(62, 200, 138, 0.1);
+      border-color: rgba(62, 200, 138, 0.35);
+      color: var(--accent-green);
+    }
+    .chip-add:active {
+      background: rgba(62, 200, 138, 0.25);
+    }
+
+    .chip-del-btn {
+      font-size: 0.75rem;
+      opacity: 0.5;
+      padding-left: 2px;
+      cursor: pointer;
+    }
+    .chip-del-btn:hover { opacity: 1; color: var(--danger); }
+
+    /* SELECTOR DE EMOJIS EN MODAL */
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      max-height: 160px;
+      overflow-y: auto;
+      padding: 4px;
+      margin-bottom: 8px;
+    }
+
+    .emoji-item {
+      font-size: 1.5rem;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px 0;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .emoji-item.selected {
+      background: rgba(62, 200, 138, 0.2);
+      border-color: var(--accent-green);
+      transform: scale(1.08);
     }
 
     /* PORCENTAJES */
@@ -653,18 +701,12 @@
           <input type="number" id="inputExpense" class="large-input input-expense" value="0" min="0" oninput="calculateDaily()">
         </div>
 
-        <!-- DESCRIPCIÓN Y CATEGORÍAS DE GASTOS -->
+        <!-- CATEGORÍAS Y DESCRIPCIÓN CON ICONOS -->
         <div>
           <label class="field-label">¿EN QUÉ SE GASTÓ? (DESCRIPCIÓN)</label>
-          <input type="text" id="inputExpenseDesc" class="large-input" style="font-size:1.05rem; padding:12px 14px;" placeholder="Ej. Comida, recarga, parqueo...">
-          <div class="chips-row">
-            <span class="chip" onclick="selectExpenseChip('Comida')">🍔 Comida</span>
-            <span class="chip" onclick="selectExpenseChip('Recarga')">📱 Recarga</span>
-            <span class="chip" onclick="selectExpenseChip('Parqueo')">🅿️ Parqueo</span>
-            <span class="chip" onclick="selectExpenseChip('Gasolina')">⛽ Gasolina</span>
-            <span class="chip" onclick="selectExpenseChip('Pasaje')">🚌 Pasaje</span>
-            <span class="chip" onclick="selectExpenseChip('Farmacia')">💊 Farmacia</span>
-            <span class="chip" onclick="selectExpenseChip('Otro')">➕ Escribir otro</span>
+          <input type="text" id="inputExpenseDesc" class="large-input" style="font-size:1.05rem; padding:12px 14px;" placeholder="Toca una categoría o escribe aquí...">
+          <div class="chips-row" id="chipsContainer">
+            <!-- Chips renderizados con JS -->
           </div>
         </div>
 
@@ -770,6 +812,28 @@
       <div id="debtList" style="margin-top:8px;"></div>
     </div>
 
+  </div>
+
+  <!-- MODAL: CREAR NUEVA CATEGORÍA CON ICONO -->
+  <div id="categoryModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="color:#ffffff; font-size:1.2rem; font-weight:800;">✨ Nueva Categoría</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem;">Selecciona un icono y escribe el nombre:</p>
+      
+      <div class="emoji-grid" id="emojiGrid">
+        <!-- Emojis generados por JS -->
+      </div>
+
+      <div>
+        <label class="field-label">NOMBRE DE LA CATEGORÍA</label>
+        <input type="text" id="newCatName" class="large-input" style="font-size:1.05rem; padding:12px;" placeholder="Ej. Barbería, Gimnasio, Luz...">
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:6px;">
+        <button class="btn-cancel" onclick="closeCategoryModal()">Cancelar</button>
+        <button class="btn-save" style="padding:13px; font-size:0.95rem;" onclick="saveCustomCategory()">Guardar</button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL: DEUDAS (ABONAR / AUMENTAR) -->
@@ -878,6 +942,24 @@
     let debts = JSON.parse(localStorage.getItem('fidel_debts') || '[]');
     let userName = localStorage.getItem('fidel_name') || 'Fidel Alvarez';
 
+    // CATEGORÍAS PERSISTENTES
+    const defaultExpenseCategories = [
+      { icon: '🍔', name: 'Comida', isCustom: false },
+      { icon: '📱', name: 'Recarga', isCustom: false },
+      { icon: '🅿️', name: 'Parqueo', isCustom: false },
+      { icon: '⛽', name: 'Gasolina', isCustom: false },
+      { icon: '🚌', name: 'Pasaje', isCustom: false },
+      { icon: '💊', name: 'Farmacia', isCustom: false }
+    ];
+    let expenseCategories = JSON.parse(localStorage.getItem('fidel_categories') || JSON.stringify(defaultExpenseCategories));
+
+    // LISTA DE EMOJIS PARA ELEGIR
+    const availableEmojis = [
+      '🛒', '💇', '💡', '💧', '📶', '🏋️', '☕', '🔧', '🩺', '🐾', '🏠', '🎁',
+      '🍺', '🎬', '📚', '🧹', '👕', '🧼', '🚕', '🥖', '🥩', '🍕', '🍼', '💰'
+    ];
+    let selectedEmoji = availableEmojis[0];
+
     let activeDebtIndex = null;
     let activeModalAction = null;
     let pendingConfirmAction = null;
@@ -933,15 +1015,82 @@
       calculateDaily();
     }
 
-    // SELECCIÓN DE CHIPS RÁPIDOS PARA GASTOS
+    /* RENDERIZADO Y CONTROL DE CATEGORÍAS */
+    function renderExpenseChips() {
+      const container = document.getElementById('chipsContainer');
+      container.innerHTML = expenseCategories.map((cat, index) => `
+        <span class="chip" onclick="selectExpenseChip('${cat.icon} ${cat.name}')">
+          <span>${cat.icon}</span>
+          <span>${cat.name}</span>
+          ${cat.isCustom ? `<span class="chip-del-btn" onclick="deleteCustomCategory(event, ${index})">✕</span>` : ''}
+        </span>
+      `).join('') + `
+        <span class="chip chip-add" onclick="openCategoryModal()">➕ Nueva</span>
+      `;
+    }
+
     function selectExpenseChip(val) {
-      const input = document.getElementById('inputExpenseDesc');
-      if (val === 'Otro') {
-        input.value = '';
-        input.focus();
-      } else {
-        input.value = val;
+      document.getElementById('inputExpenseDesc').value = val;
+    }
+
+    function openCategoryModal() {
+      document.getElementById('newCatName').value = '';
+      selectedEmoji = availableEmojis[0];
+      renderEmojiGrid();
+      document.getElementById('categoryModal').classList.remove('hidden');
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.add('hidden');
+    }
+
+    function renderEmojiGrid() {
+      const grid = document.getElementById('emojiGrid');
+      grid.innerHTML = availableEmojis.map(emoji => `
+        <div class="emoji-item ${emoji === selectedEmoji ? 'selected' : ''}" onclick="selectEmoji('${emoji}')">
+          ${emoji}
+        </div>
+      `).join('');
+    }
+
+    function selectEmoji(emoji) {
+      selectedEmoji = emoji;
+      renderEmojiGrid();
+    }
+
+    function saveCustomCategory() {
+      const name = document.getElementById('newCatName').value.trim();
+      if (!name) {
+        showToast('Escribe el nombre del gasto', true);
+        return;
       }
+
+      expenseCategories.push({
+        icon: selectedEmoji,
+        name: name,
+        isCustom: true
+      });
+
+      localStorage.setItem('fidel_categories', JSON.stringify(expenseCategories));
+      renderExpenseChips();
+      selectExpenseChip(`${selectedEmoji} ${name}`);
+      closeCategoryModal();
+      showToast('¡Categoría guardada con éxito!');
+    }
+
+    function deleteCustomCategory(e, index) {
+      e.stopPropagation();
+      const cat = expenseCategories[index];
+      openConfirmModal(
+        '¿Eliminar categoría?',
+        `¿Deseas quitar "${cat.icon} ${cat.name}" de tus botones rápidos?`,
+        () => {
+          expenseCategories.splice(index, 1);
+          localStorage.setItem('fidel_categories', JSON.stringify(expenseCategories));
+          renderExpenseChips();
+          showToast('Categoría eliminada');
+        }
+      );
     }
 
     // SIEMPRE REINICIA A CERO NORMAL (LIMPIO)
@@ -958,10 +1107,7 @@
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
       const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
 
-      // El apartado se calcula únicamente sobre lo que escribes en gané
       const aparto = Math.round(gane * (currentPercent / 100));
-
-      // El gasto se descuenta únicamente de lo que queda
       const disponible = gane - aparto;
       const queda = disponible - gasto;
 
@@ -993,7 +1139,7 @@
 
       const existingIndex = records.findIndex(r => r.date === dateVal);
 
-      // Texto formateado para el detalle del gasto (ej: "Comida (C$ 60)")
+      // Texto formateado con su icono o descripción
       const nuevoDetalleItem = expenseVal > 0 
         ? (expenseDescVal ? `${expenseDescVal} (C$ ${expenseVal})` : `Varios (C$ ${expenseVal})`)
         : '';
@@ -1003,7 +1149,6 @@
         const nuevoGane = (ex.gane || 0) + incomeVal;
         const nuevoGasto = (ex.gastos || 0) + expenseVal;
 
-        // Combinar descripciones anteriores con la nueva si ya había una
         let detalleFinal = ex.gastosDesc || '';
         if (nuevoDetalleItem) {
           detalleFinal = detalleFinal ? `${detalleFinal}, ${nuevoDetalleItem}` : nuevoDetalleItem;
@@ -1039,7 +1184,6 @@
       records.sort((a, b) => new Date(b.date) - new Date(a.date));
       localStorage.setItem('fidel_records', JSON.stringify(records));
 
-      // Limpia todo a cero automáticamente
       resetFormToZero();
       renderHistory();
       showToast('¡Guardado exitosamente!');
@@ -1082,7 +1226,7 @@
       document.getElementById('sumFondoTotal').innerText = `C$ ${fondoHistorico.toLocaleString()}`;
     }
 
-    // HISTORIAL CON DETALLES DE GASTOS
+    // HISTORIAL CON ICONOS Y DETALLES
     function renderHistory() {
       const container = document.getElementById('historyList');
       if (records.length === 0) {
@@ -1295,6 +1439,7 @@
     }
 
     setupHeaderDate();
+    renderExpenseChips();
     resetFormToZero();
   </script>
 </body>
