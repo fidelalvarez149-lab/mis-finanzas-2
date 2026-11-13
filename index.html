@@ -166,6 +166,28 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
 
+    /* BOTÓN PARA GUARDAR CATEGORÍA DESDE EL INPUT */
+    .btn-quick-cat {
+      background: rgba(62, 200, 138, 0.12);
+      border: 1px solid rgba(62, 200, 138, 0.35);
+      color: var(--accent-green);
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 0 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-quick-cat:active {
+      background: rgba(62, 200, 138, 0.25);
+      transform: scale(0.96);
+    }
+
     /* CHIPS DINÁMICOS DE CATEGORÍAS */
     .chips-row {
       display: flex;
@@ -701,10 +723,13 @@
           <input type="number" id="inputExpense" class="large-input input-expense" value="0" min="0" oninput="calculateDaily()">
         </div>
 
-        <!-- CATEGORÍAS Y DESCRIPCIÓN CON ICONOS -->
+        <!-- CATEGORÍAS Y DESCRIPCIÓN CON BOTÓN DIRECTO DE GUARDAR -->
         <div>
           <label class="field-label">¿EN QUÉ SE GASTÓ? (DESCRIPCIÓN)</label>
-          <input type="text" id="inputExpenseDesc" class="large-input" style="font-size:1.05rem; padding:12px 14px;" placeholder="Toca una categoría o escribe aquí...">
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="inputExpenseDesc" class="large-input" style="font-size:1.02rem; padding:12px 14px; flex:1; min-width:0;" placeholder="Escribe o toca una categoría...">
+            <button type="button" class="btn-quick-cat" onclick="quickSaveCategoryFromInput()">💾 Guardar categoría</button>
+          </div>
           <div class="chips-row" id="chipsContainer">
             <!-- Chips renderizados con JS -->
           </div>
@@ -814,11 +839,11 @@
 
   </div>
 
-  <!-- MODAL: CREAR NUEVA CATEGORÍA CON ICONO -->
+  <!-- MODAL: CREAR / SELECCIONAR ICONO DE NUEVA CATEGORÍA -->
   <div id="categoryModal" class="modal-overlay hidden">
     <div class="modal-content">
-      <h3 style="color:#ffffff; font-size:1.2rem; font-weight:800;">✨ Nueva Categoría</h3>
-      <p style="color:var(--text-muted); font-size:0.85rem;">Selecciona un icono y escribe el nombre:</p>
+      <h3 style="color:#ffffff; font-size:1.2rem; font-weight:800;">✨ Guardar Categoría</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem;">Selecciona el icono que mejor represente este gasto:</p>
       
       <div class="emoji-grid" id="emojiGrid">
         <!-- Emojis generados por JS -->
@@ -1025,7 +1050,7 @@
           ${cat.isCustom ? `<span class="chip-del-btn" onclick="deleteCustomCategory(event, ${index})">✕</span>` : ''}
         </span>
       `).join('') + `
-        <span class="chip chip-add" onclick="openCategoryModal()">➕ Nueva</span>
+        <span class="chip chip-add" onclick="openCategoryModal('')">➕ Nueva</span>
       `;
     }
 
@@ -1033,11 +1058,27 @@
       document.getElementById('inputExpenseDesc').value = val;
     }
 
-    function openCategoryModal() {
-      document.getElementById('newCatName').value = '';
+    // GUARDA DIRECTAMENTE LO QUE ESCRIBISTE EN EL CAMPO
+    function quickSaveCategoryFromInput() {
+      const rawText = document.getElementById('inputExpenseDesc').value.trim();
+      if (!rawText) {
+        showToast('Escribe primero el nombre del gasto', true);
+        return;
+      }
+
+      // Limpia emojis previos si ya tenía alguno
+      const cleanName = rawText.replace(/^[^\w\s\dáéíóúÁÉÍÓÚñÑ]+/, '').trim() || rawText;
+      openCategoryModal(cleanName);
+    }
+
+    function openCategoryModal(prefilledName = '') {
+      document.getElementById('newCatName').value = prefilledName;
       selectedEmoji = availableEmojis[0];
       renderEmojiGrid();
       document.getElementById('categoryModal').classList.remove('hidden');
+      if (!prefilledName) {
+        setTimeout(() => document.getElementById('newCatName').focus(), 150);
+      }
     }
 
     function closeCategoryModal() {
@@ -1139,7 +1180,6 @@
 
       const existingIndex = records.findIndex(r => r.date === dateVal);
 
-      // Texto formateado con su icono o descripción
       const nuevoDetalleItem = expenseVal > 0 
         ? (expenseDescVal ? `${expenseDescVal} (C$ ${expenseVal})` : `Varios (C$ ${expenseVal})`)
         : '';
