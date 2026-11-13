@@ -166,6 +166,34 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
 
+    /* CHIPS DE CATEGORÍAS DE GASTOS */
+    .chips-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .chip:active, .chip.active {
+      background: rgba(248, 113, 113, 0.18);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+      transform: scale(0.96);
+    }
+
     /* PORCENTAJES */
     .percent-row {
       display: grid;
@@ -625,6 +653,21 @@
           <input type="number" id="inputExpense" class="large-input input-expense" value="0" min="0" oninput="calculateDaily()">
         </div>
 
+        <!-- DESCRIPCIÓN Y CATEGORÍAS DE GASTOS -->
+        <div>
+          <label class="field-label">¿EN QUÉ SE GASTÓ? (DESCRIPCIÓN)</label>
+          <input type="text" id="inputExpenseDesc" class="large-input" style="font-size:1.05rem; padding:12px 14px;" placeholder="Ej. Comida, recarga, parqueo...">
+          <div class="chips-row">
+            <span class="chip" onclick="selectExpenseChip('Comida')">🍔 Comida</span>
+            <span class="chip" onclick="selectExpenseChip('Recarga')">📱 Recarga</span>
+            <span class="chip" onclick="selectExpenseChip('Parqueo')">🅿️ Parqueo</span>
+            <span class="chip" onclick="selectExpenseChip('Gasolina')">⛽ Gasolina</span>
+            <span class="chip" onclick="selectExpenseChip('Pasaje')">🚌 Pasaje</span>
+            <span class="chip" onclick="selectExpenseChip('Farmacia')">💊 Farmacia</span>
+            <span class="chip" onclick="selectExpenseChip('Otro')">➕ Escribir otro</span>
+          </div>
+        </div>
+
         <div>
           <label class="field-label">APARTAR PARA EL FONDO (INTOCABLE)</label>
           <div class="percent-row">
@@ -890,10 +933,22 @@
       calculateDaily();
     }
 
+    // SELECCIÓN DE CHIPS RÁPIDOS PARA GASTOS
+    function selectExpenseChip(val) {
+      const input = document.getElementById('inputExpenseDesc');
+      if (val === 'Otro') {
+        input.value = '';
+        input.focus();
+      } else {
+        input.value = val;
+      }
+    }
+
     // SIEMPRE REINICIA A CERO NORMAL (LIMPIO)
     function resetFormToZero() {
       document.getElementById('inputIncome').value = 0;
       document.getElementById('inputExpense').value = 0;
+      document.getElementById('inputExpenseDesc').value = '';
       calculateDaily();
       updateMonthSummary();
     }
@@ -919,11 +974,12 @@
       quedaEl.style.color = queda < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
     }
 
-    // GUARDAR DÍA: SUMA DE FORMA SEGURA Y REGRESA TODO A CERO
+    // GUARDAR DÍA: GUARDA MONTO, DESCRIPCIÓN Y LIMPIA A CERO
     function saveDay() {
       const dateVal = document.getElementById('inputDate').value;
       const incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
       const expenseVal = parseFloat(document.getElementById('inputExpense').value) || 0;
+      const expenseDescVal = document.getElementById('inputExpenseDesc').value.trim();
 
       if (!dateVal) {
         showToast('Selecciona una fecha', true);
@@ -937,13 +993,22 @@
 
       const existingIndex = records.findIndex(r => r.date === dateVal);
 
+      // Texto formateado para el detalle del gasto (ej: "Comida (C$ 60)")
+      const nuevoDetalleItem = expenseVal > 0 
+        ? (expenseDescVal ? `${expenseDescVal} (C$ ${expenseVal})` : `Varios (C$ ${expenseVal})`)
+        : '';
+
       if (existingIndex !== -1) {
-        // Si ya había registro ese día, suma el nuevo ingreso y el nuevo gasto
         const ex = records[existingIndex];
         const nuevoGane = (ex.gane || 0) + incomeVal;
         const nuevoGasto = (ex.gastos || 0) + expenseVal;
 
-        // El apartado se calcula exclusivamente sobre la ganancia total
+        // Combinar descripciones anteriores con la nueva si ya había una
+        let detalleFinal = ex.gastosDesc || '';
+        if (nuevoDetalleItem) {
+          detalleFinal = detalleFinal ? `${detalleFinal}, ${nuevoDetalleItem}` : nuevoDetalleItem;
+        }
+
         const nuevoAparto = Math.round(nuevoGane * (currentPercent / 100));
         const nuevoQueda = (nuevoGane - nuevoAparto) - nuevoGasto;
 
@@ -951,12 +1016,12 @@
           date: dateVal,
           gane: nuevoGane,
           gastos: nuevoGasto,
+          gastosDesc: detalleFinal,
           aparto: nuevoAparto,
           queda: nuevoQueda,
           percent: currentPercent
         };
       } else {
-        // Si es un día nuevo
         const aparto = Math.round(incomeVal * (currentPercent / 100));
         const queda = (incomeVal - aparto) - expenseVal;
 
@@ -964,6 +1029,7 @@
           date: dateVal,
           gane: incomeVal,
           gastos: expenseVal,
+          gastosDesc: nuevoDetalleItem,
           aparto: aparto,
           queda: queda,
           percent: currentPercent
@@ -973,13 +1039,13 @@
       records.sort((a, b) => new Date(b.date) - new Date(a.date));
       localStorage.setItem('fidel_records', JSON.stringify(records));
 
-      // Limpia todo a cero de nuevo automáticamente
+      // Limpia todo a cero automáticamente
       resetFormToZero();
       renderHistory();
       showToast('¡Guardado exitosamente!');
     }
 
-    // RESUMEN DEL MES (APARTADO Y FONDO 100% BLINDADOS)
+    // RESUMEN DEL MES
     function updateMonthSummary() {
       const selectedDate = new Date((document.getElementById('inputDate').value || formattedTodayDate) + 'T00:00:00');
       const year = selectedDate.getFullYear();
@@ -997,7 +1063,6 @@
       const apartadoMes = monthRecords.reduce((acc, r) => acc + (r.aparto || 0), 0);
       const gastosMes = monthRecords.reduce((acc, r) => acc + (r.gastos || 0), 0);
 
-      // Los gastos ÚNICAMENTE descuentan del campo TE QUEDÓ
       const quedoMes = (ganadoMes - apartadoMes) - gastosMes;
 
       const diasTrabajados = monthRecords.filter(r => (r.gane || 0) > 0).length;
@@ -1017,6 +1082,7 @@
       document.getElementById('sumFondoTotal').innerText = `C$ ${fondoHistorico.toLocaleString()}`;
     }
 
+    // HISTORIAL CON DETALLES DE GASTOS
     function renderHistory() {
       const container = document.getElementById('historyList');
       if (records.length === 0) {
@@ -1032,6 +1098,7 @@
               Ganó: C$ ${(r.gane || 0).toLocaleString()} | Fondo (${r.percent}%): <span style="color:var(--accent-gold);">C$ ${(r.aparto || 0).toLocaleString()}</span><br>
               Gastó: <span style="color:var(--accent-red);">C$ ${(r.gastos || 0).toLocaleString()}</span> | Quedó: <span style="color:${(r.queda || 0) < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">C$ ${(r.queda || 0).toLocaleString()}</span>
             </span>
+            ${r.gastosDesc ? `<div style="font-size:0.75rem; color:#fca5a5; margin-top:3px; line-height:1.3;">📌 <strong>Detalle:</strong> ${r.gastosDesc}</div>` : ''}
           </div>
           <button class="btn-delete" title="Eliminar" onclick="askDeleteRecord(${index})">✕</button>
         </div>
