@@ -89,7 +89,7 @@
       border: 1px solid rgba(62, 200, 138, 0.2);
     }
 
-    /* PESTAÑAS */
+    /* PESTAÑAS PRINCIPALES */
     .nav-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -166,7 +166,7 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
 
-    /* BOTÓN PARA GUARDAR CATEGORÍA */
+    /* BOTÓN GUARDAR CATEGORÍA */
     .btn-quick-cat {
       background: rgba(62, 200, 138, 0.12);
       border: 1px solid rgba(62, 200, 138, 0.35);
@@ -188,7 +188,7 @@
       transform: scale(0.96);
     }
 
-    /* CHIPS DINÁMICOS DE CATEGORÍAS */
+    /* CHIPS DE CATEGORÍAS */
     .chips-row {
       display: flex;
       gap: 6px;
@@ -224,9 +224,6 @@
       border-color: rgba(62, 200, 138, 0.35);
       color: var(--accent-green);
     }
-    .chip-add:active {
-      background: rgba(62, 200, 138, 0.25);
-    }
 
     .chip-del-btn {
       font-size: 0.75rem;
@@ -236,7 +233,7 @@
     }
     .chip-del-btn:hover { opacity: 1; color: var(--danger); }
 
-    /* SELECTOR DE EMOJIS */
+    /* EMOJI GRID */
     .emoji-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -446,8 +443,44 @@
       text-decoration: underline;
     }
 
-    /* HISTORIAL */
-    .history-item {
+    /* SUB-PESTAÑAS DE HISTORIAL (SEPARADO) */
+    .history-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .hist-tab-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .hist-tab-btn.active-green {
+      background: rgba(62, 200, 138, 0.15);
+      border-color: var(--accent-green);
+      color: #ffffff;
+    }
+
+    .hist-tab-btn.active-red {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: var(--accent-red);
+      color: #ffffff;
+    }
+
+    /* TARJETAS SEPARADAS DE HISTORIAL */
+    .hist-item-card {
       background-color: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 14px;
@@ -456,6 +489,45 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .hist-border-green {
+      border-left: 4px solid var(--accent-green);
+    }
+
+    .hist-border-red {
+      border-left: 4px solid var(--accent-red);
+    }
+
+    .hist-title {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .hist-main-amount {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin: 2px 0;
+    }
+
+    .hist-subtext {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .hist-chip-desc {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #ffffff;
+      font-weight: 700;
+      margin-top: 3px;
     }
 
     .btn-delete {
@@ -470,6 +542,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      flex-shrink: 0;
       transition: all 0.2s;
     }
 
@@ -773,12 +846,28 @@
 
     </div>
 
-    <!-- VISTA HISTORIAL -->
+    <!-- VISTA HISTORIAL (SEPARADO EN GANANCIAS Y GASTOS) -->
     <div id="viewHistorial" class="card hidden">
       <h2 class="month-header">Historial de Registros</h2>
-      <div id="historyList">
-        <p style="color:var(--text-muted); font-size:0.9rem;">No hay registros aún.</p>
+      
+      <!-- Selector de Sub-pestañas -->
+      <div class="history-tabs">
+        <button class="hist-tab-btn active-green" id="btnHistGanancias" onclick="switchHistTab('ganancias')">
+          🟢 Ganancias
+        </button>
+        <button class="hist-tab-btn" id="btnHistGastos" onclick="switchHistTab('gastos')">
+          🔴 Gastos
+        </button>
       </div>
+
+      <!-- Resumen de la sub-pestaña seleccionada -->
+      <div class="stat-card" id="histSummaryBox" style="margin-bottom:4px;">
+        <span class="label" id="histSummaryLabel">TOTAL GANANCIAS REGISTRADAS</span>
+        <span class="val val-green" id="histSummaryVal">C$ 0</span>
+      </div>
+
+      <!-- Lista del Historial -->
+      <div id="historyList"></div>
     </div>
 
     <!-- VISTA DEUDAS -->
@@ -878,18 +967,12 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
-          // Consulta a GitHub al abrir
           reg.update();
-
-          // Consulta a GitHub cada vez que vuelves a la app
           document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-              reg.update();
-            }
+            if (document.visibilityState === 'visible') reg.update();
           });
         }).catch(err => console.log('SW:', err));
 
-        // Cuando detecta el cambio de versión en GitHub, se actualiza sola al instante
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
           if (!refreshing) {
@@ -904,6 +987,7 @@
     let records = JSON.parse(localStorage.getItem('fidel_records') || '[]');
     let debts = JSON.parse(localStorage.getItem('fidel_debts') || '[]');
     let userName = localStorage.getItem('fidel_name') || 'Fidel Alvarez';
+    let currentHistTab = 'ganancias'; // 'ganancias' o 'gastos'
 
     // CATEGORÍAS PERSISTENTES
     const defaultExpenseCategories = [
@@ -978,7 +1062,6 @@
       calculateDaily();
     }
 
-    /* RENDERIZADO Y CONTROL DE CATEGORÍAS */
     function renderExpenseChips() {
       const container = document.getElementById('chipsContainer');
       container.innerHTML = expenseCategories.map((cat, index) => `
@@ -996,7 +1079,6 @@
       document.getElementById('inputExpenseDesc').value = val;
     }
 
-    // GUARDA DIRECTAMENTE LO ESCRITO EN EL CAMPO
     function quickSaveCategoryFromInput() {
       const rawText = document.getElementById('inputExpenseDesc').value.trim();
       if (!rawText) {
@@ -1071,7 +1153,6 @@
       );
     }
 
-    // SIEMPRE REINICIA A CERO NORMAL (LIMPIO)
     function resetFormToZero() {
       document.getElementById('inputIncome').value = 0;
       document.getElementById('inputExpense').value = 0;
@@ -1080,7 +1161,6 @@
       updateMonthSummary();
     }
 
-    // CÁLCULO EN VIVO
     function calculateDaily() {
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
       const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
@@ -1098,7 +1178,6 @@
       quedaEl.style.color = queda < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
     }
 
-    // GUARDAR DÍA
     function saveDay() {
       const dateVal = document.getElementById('inputDate').value;
       const incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
@@ -1166,7 +1245,6 @@
       showToast('¡Guardado exitosamente!');
     }
 
-    // RESUMEN DEL MES
     function updateMonthSummary() {
       const selectedDate = new Date((document.getElementById('inputDate').value || formattedTodayDate) + 'T00:00:00');
       const year = selectedDate.getFullYear();
@@ -1183,7 +1261,6 @@
       const ganadoMes = monthRecords.reduce((acc, r) => acc + (r.gane || 0), 0);
       const apartadoMes = monthRecords.reduce((acc, r) => acc + (r.aparto || 0), 0);
       const gastosMes = monthRecords.reduce((acc, r) => acc + (r.gastos || 0), 0);
-
       const quedoMes = (ganadoMes - apartadoMes) - gastosMes;
 
       const diasTrabajados = monthRecords.filter(r => (r.gane || 0) > 0).length;
@@ -1203,39 +1280,133 @@
       document.getElementById('sumFondoTotal').innerText = `C$ ${fondoHistorico.toLocaleString()}`;
     }
 
-    // HISTORIAL CON DETALLES DE GASTOS
-    function renderHistory() {
-      const container = document.getElementById('historyList');
-      if (records.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">No hay registros aún.</p>';
-        return;
-      }
+    /* SUB-PESTAÑAS DE HISTORIAL: GANANCIAS O GASTOS */
+    function switchHistTab(tab) {
+      currentHistTab = tab;
+      const btnGanancias = document.getElementById('btnHistGanancias');
+      const btnGastos = document.getElementById('btnHistGastos');
 
-      container.innerHTML = records.map((r, index) => `
-        <div class="history-item">
-          <div>
-            <strong style="color:#ffffff;">${r.date}</strong><br>
-            <span style="font-size:0.83rem; color:var(--text-muted);">
-              Ganó: C$ ${(r.gane || 0).toLocaleString()} | Fondo (${r.percent}%): <span style="color:var(--accent-gold);">C$ ${(r.aparto || 0).toLocaleString()}</span><br>
-              Gastó: <span style="color:var(--accent-red);">C$ ${(r.gastos || 0).toLocaleString()}</span> | Quedó: <span style="color:${(r.queda || 0) < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">C$ ${(r.queda || 0).toLocaleString()}</span>
-            </span>
-            ${r.gastosDesc ? `<div style="font-size:0.75rem; color:#fca5a5; margin-top:3px; line-height:1.3;">📌 <strong>Detalle:</strong> ${r.gastosDesc}</div>` : ''}
-          </div>
-          <button class="btn-delete" title="Eliminar" onclick="askDeleteRecord(${index})">✕</button>
-        </div>
-      `).join('');
+      btnGanancias.classList.toggle('active-green', tab === 'ganancias');
+      btnGastos.classList.toggle('active-red', tab === 'gastos');
+
+      renderHistory();
     }
 
-    function askDeleteRecord(index) {
+    /* RENDERIZA EL HISTORIAL POR SEPARADO */
+    function renderHistory() {
+      const container = document.getElementById('historyList');
+      const summaryLabel = document.getElementById('histSummaryLabel');
+      const summaryVal = document.getElementById('histSummaryVal');
+
+      if (currentHistTab === 'ganancias') {
+        // Filtrar registros que tengan ganancias
+        const incomeRecords = records.filter(r => (r.gane || 0) > 0);
+        const totalIncome = incomeRecords.reduce((acc, r) => acc + r.gane, 0);
+
+        summaryLabel.innerText = 'TOTAL GANANCIAS REGISTRADAS';
+        summaryLabel.style.color = 'var(--text-muted)';
+        summaryVal.innerText = `C$ ${totalIncome.toLocaleString()}`;
+        summaryVal.className = 'val val-green';
+
+        if (incomeRecords.length === 0) {
+          container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;">No hay ganancias registradas aún.</p>';
+          return;
+        }
+
+        container.innerHTML = incomeRecords.map(r => {
+          const originalIndex = records.findIndex(rec => rec.date === r.date);
+          return `
+            <div class="hist-item-card hist-border-green">
+              <div>
+                <span class="hist-title">${r.date}</span>
+                <div class="hist-main-amount val-green">+ C$ ${r.gane.toLocaleString()}</div>
+                <div class="hist-subtext">
+                  Fondo apartado (${r.percent}%): <strong class="val-orange">C$ ${(r.aparto || 0).toLocaleString()}</strong><br>
+                  Dinero libre: <strong style="color:#ffffff;">C$ ${(r.gane - (r.aparto || 0)).toLocaleString()}</strong>
+                </div>
+              </div>
+              <button class="btn-delete" title="Eliminar ganancia" onclick="askDeleteIncome(${originalIndex})">✕</button>
+            </div>
+          `;
+        }).join('');
+
+      } else {
+        // Filtrar registros que tengan gastos
+        const expenseRecords = records.filter(r => (r.gastos || 0) > 0);
+        const totalExpense = expenseRecords.reduce((acc, r) => acc + r.gastos, 0);
+
+        summaryLabel.innerText = 'TOTAL GASTOS REGISTRADOS';
+        summaryLabel.style.color = 'var(--accent-red)';
+        summaryVal.innerText = `C$ ${totalExpense.toLocaleString()}`;
+        summaryVal.className = 'val val-red';
+
+        if (expenseRecords.length === 0) {
+          container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;">No hay gastos registrados aún.</p>';
+          return;
+        }
+
+        container.innerHTML = expenseRecords.map(r => {
+          const originalIndex = records.findIndex(rec => rec.date === r.date);
+          return `
+            <div class="hist-item-card hist-border-red">
+              <div>
+                <span class="hist-title">${r.date}</span>
+                <div class="hist-main-amount val-red">- C$ ${r.gastos.toLocaleString()}</div>
+                <div class="hist-subtext">
+                  ${r.gastosDesc ? `<span class="hist-chip-desc">${r.gastosDesc}</span>` : '<span class="hist-chip-desc">Gasto vario</span>'}
+                </div>
+              </div>
+              <button class="btn-delete" title="Eliminar gasto" onclick="askDeleteExpense(${originalIndex})">✕</button>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // ELIMINAR SOLO LA GANANCIA DE UN DÍA (SIN TOCAR GASTOS)
+    function askDeleteIncome(index) {
+      const r = records[index];
       openConfirmModal(
-        '¿Eliminar Registro?',
-        `Se borrará permanentemente el registro del día ${records[index].date}.`,
+        '¿Eliminar Ganancia?',
+        `Se eliminará la ganancia de C$ ${r.gane.toLocaleString()} del día ${r.date}.`,
         () => {
-          records.splice(index, 1);
+          if ((r.gastos || 0) > 0) {
+            // Si tenía gastos ese día, solo ponemos la ganancia y su apartado en 0
+            records[index].gane = 0;
+            records[index].aparto = 0;
+            records[index].queda = -records[index].gastos;
+          } else {
+            // Si no tenía gastos, eliminamos el registro completo
+            records.splice(index, 1);
+          }
           localStorage.setItem('fidel_records', JSON.stringify(records));
           updateMonthSummary();
           renderHistory();
-          showToast('Registro eliminado');
+          showToast('Ganancia eliminada');
+        }
+      );
+    }
+
+    // ELIMINAR SOLO EL GASTO DE UN DÍA (SIN TOCAR GANANCIAS NI APARTADO)
+    function askDeleteExpense(index) {
+      const r = records[index];
+      openConfirmModal(
+        '¿Eliminar Gasto?',
+        `Se eliminará el gasto de C$ ${r.gastos.toLocaleString()} del día ${r.date}.`,
+        () => {
+          if ((r.gane || 0) > 0) {
+            // Si tenía ganancia ese día, solo borramos los gastos y el apartado queda intacto
+            records[index].gastos = 0;
+            records[index].gastosDesc = '';
+            records[index].queda = records[index].gane - records[index].aparto;
+          } else {
+            // Si no tenía ganancia, eliminamos el registro completo
+            records.splice(index, 1);
+          }
+          localStorage.setItem('fidel_records', JSON.stringify(records));
+          updateMonthSummary();
+          renderHistory();
+          showToast('Gasto eliminado');
         }
       );
     }
