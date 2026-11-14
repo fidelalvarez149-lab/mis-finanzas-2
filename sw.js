@@ -1,5 +1,5 @@
 // Cada vez que hagas un cambio futuro, sube este número (ej: v11, v12...)
-const CACHE_NAME = 'finanzas-v11';
+const CACHE_NAME = 'finanzas-v12';
 
 const urlsToCache = [
   './',
