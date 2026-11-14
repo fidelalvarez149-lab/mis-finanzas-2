@@ -166,7 +166,7 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
 
-    /* BOTÓN PARA GUARDAR CATEGORÍA DESDE EL INPUT */
+    /* BOTÓN PARA GUARDAR CATEGORÍA */
     .btn-quick-cat {
       background: rgba(62, 200, 138, 0.12);
       border: 1px solid rgba(62, 200, 138, 0.35);
@@ -236,7 +236,7 @@
     }
     .chip-del-btn:hover { opacity: 1; color: var(--danger); }
 
-    /* SELECTOR DE EMOJIS EN MODAL */
+    /* SELECTOR DE EMOJIS */
     .emoji-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -646,44 +646,6 @@
       color: #fca5a5;
     }
 
-    /* BARRA FLOTANTE DE ACTUALIZACIÓN */
-    .update-banner {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 28px);
-      max-width: 400px;
-      background: #14251c;
-      border: 1px solid var(--accent-green);
-      padding: 14px 16px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      z-index: 10001;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-      to { transform: translateX(-50%) translateY(0); opacity: 1; }
-    }
-
-    .btn-update-now {
-      background: var(--accent-green);
-      color: var(--accent-dark);
-      border: none;
-      font-weight: 800;
-      font-size: 0.85rem;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
     .hidden { display: none !important; }
   </style>
 </head>
@@ -723,7 +685,7 @@
           <input type="number" id="inputExpense" class="large-input input-expense" value="0" min="0" oninput="calculateDaily()">
         </div>
 
-        <!-- CATEGORÍAS Y DESCRIPCIÓN CON BOTÓN DIRECTO DE GUARDAR -->
+        <!-- CATEGORÍAS Y DESCRIPCIÓN CON BOTÓN DIRECTO -->
         <div>
           <label class="field-label">¿EN QUÉ SE GASTÓ? (DESCRIPCIÓN)</label>
           <div style="display:flex; gap:8px;">
@@ -911,34 +873,23 @@
     </div>
   </div>
 
-  <!-- AVISO DE ACTUALIZACIÓN FLOTANTE -->
-  <div id="updateBanner" class="update-banner hidden">
-    <div>
-      <strong style="color:#ffffff; font-size:0.92rem;">🚀 ¡Nueva mejora disponible!</strong>
-      <p style="color:var(--text-muted); font-size:0.78rem; margin-top:2px;">Hay una actualización lista para instalar.</p>
-    </div>
-    <button class="btn-update-now" id="btnUpdateNow">Actualizar</button>
-  </div>
-
   <script>
-    let newWorkerWaiting = null;
+    // SISTEMA DE ACTUALIZACIÓN 100% AUTOMÁTICA EN CUALQUIER DISPOSITIVO
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
-          if (reg.waiting) {
-            promptUserUpdate(reg.waiting);
-            return;
-          }
-          reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                promptUserUpdate(newWorker);
-              }
-            });
+          // Consulta a GitHub al abrir
+          reg.update();
+
+          // Consulta a GitHub cada vez que vuelves a la app
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              reg.update();
+            }
           });
         }).catch(err => console.log('SW:', err));
 
+        // Cuando detecta el cambio de versión en GitHub, se actualiza sola al instante
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
           if (!refreshing) {
@@ -947,19 +898,6 @@
           }
         });
       });
-    }
-
-    function promptUserUpdate(worker) {
-      newWorkerWaiting = worker;
-      const banner = document.getElementById('updateBanner');
-      if (banner) {
-        banner.classList.remove('hidden');
-        document.getElementById('btnUpdateNow').onclick = () => {
-          if (newWorkerWaiting) {
-            newWorkerWaiting.postMessage({ type: 'SKIP_WAITING' });
-          }
-        };
-      }
     }
 
     let currentPercent = 10;
@@ -978,7 +916,7 @@
     ];
     let expenseCategories = JSON.parse(localStorage.getItem('fidel_categories') || JSON.stringify(defaultExpenseCategories));
 
-    // LISTA DE EMOJIS PARA ELEGIR
+    // LISTA DE EMOJIS
     const availableEmojis = [
       '🛒', '💇', '💡', '💧', '📶', '🏋️', '☕', '🔧', '🩺', '🐾', '🏠', '🎁',
       '🍺', '🎬', '📚', '🧹', '👕', '🧼', '🚕', '🥖', '🥩', '🍕', '🍼', '💰'
@@ -1058,7 +996,7 @@
       document.getElementById('inputExpenseDesc').value = val;
     }
 
-    // GUARDA DIRECTAMENTE LO QUE ESCRIBISTE EN EL CAMPO
+    // GUARDA DIRECTAMENTE LO ESCRITO EN EL CAMPO
     function quickSaveCategoryFromInput() {
       const rawText = document.getElementById('inputExpenseDesc').value.trim();
       if (!rawText) {
@@ -1066,7 +1004,6 @@
         return;
       }
 
-      // Limpia emojis previos si ya tenía alguno
       const cleanName = rawText.replace(/^[^\w\s\dáéíóúÁÉÍÓÚñÑ]+/, '').trim() || rawText;
       openCategoryModal(cleanName);
     }
@@ -1143,7 +1080,7 @@
       updateMonthSummary();
     }
 
-    // CÁLCULO EN VIVO MIENTRAS ESCRIBES
+    // CÁLCULO EN VIVO
     function calculateDaily() {
       const gane = parseFloat(document.getElementById('inputIncome').value) || 0;
       const gasto = parseFloat(document.getElementById('inputExpense').value) || 0;
@@ -1161,7 +1098,7 @@
       quedaEl.style.color = queda < 0 ? 'var(--accent-red)' : 'var(--accent-green)';
     }
 
-    // GUARDAR DÍA: GUARDA MONTO, DESCRIPCIÓN Y LIMPIA A CERO
+    // GUARDAR DÍA
     function saveDay() {
       const dateVal = document.getElementById('inputDate').value;
       const incomeVal = parseFloat(document.getElementById('inputIncome').value) || 0;
@@ -1266,7 +1203,7 @@
       document.getElementById('sumFondoTotal').innerText = `C$ ${fondoHistorico.toLocaleString()}`;
     }
 
-    // HISTORIAL CON ICONOS Y DETALLES
+    // HISTORIAL CON DETALLES DE GASTOS
     function renderHistory() {
       const container = document.getElementById('historyList');
       if (records.length === 0) {
